@@ -20,7 +20,35 @@ import AddSettingDialog from '../components/AddSettingDialog'
 import DeleteSettingDialog from '../components/DeleteSettingDialog'
 import GoalSetting from '../components/GoalSetting'
 
+const DEFAULT_STATE = { goal: {}, dialog: null }
+
 class SettingsScreen extends Component {
+  constructor (...args) {
+    super(...args)
+    this.state = DEFAULT_STATE
+  }
+
+  @autobind
+  closeDialogs () {
+    this.setState(DEFAULT_STATE)
+  }
+
+  componentWillReceiveProps ({ currentUser: { loginState } }) {
+    if (loginState !== 'success') {
+      history.push('/')
+    }
+  }
+
+  @autobind
+  deleteSelectedGoal () {
+    this.props.removeGoal(this.state.goal.id)
+    this.closeDialogs()
+  }
+
+  openGoalDeleter (goal) {
+    this.setState({ goal, dialog: 'delete' })
+  }
+
   render () {
     const { currentUser, goals, logOut } = this.props
     const logoutButton = (
@@ -41,7 +69,7 @@ class SettingsScreen extends Component {
               <List>
                 <ListItem
                   primaryText='Vous êtes connecté-e en tant que'
-                  secondaryText={currentUser.email}
+                  secondaryText={(currentUser || {}).email}
                   rightIconButton={logoutButton}
                 />
               </List>
@@ -50,6 +78,7 @@ class SettingsScreen extends Component {
                 <Subheader>Mes objectifs</Subheader>
                 {goals.map((goal) =>
                   <GoalSetting key={goal.id} goal={goal}
+                    onDeleteClick={() => this.openGoalDeleter(goal)}
                   />
                 )}
                 {goals.length === 0 && (
@@ -63,6 +92,12 @@ class SettingsScreen extends Component {
               />
             </CardActions>
           </Card>
+          <DeleteSettingDialog
+            goal={this.state.goal}
+            open={this.state.dialog === 'delete'}
+            onCancel={this.closeDialogs}
+            onDelete={this.deleteSelectedGoal}
+          />
         </div>
       </DocumentTitle>
     )
