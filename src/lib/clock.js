@@ -1,10 +1,13 @@
 import moment from 'moment'
 
+import clockIcon from '../icons/clock-reset.png'
 import { closeDay } from '../action-creators'
 import store from '../store'
 
 const clock = setInterval(checkClock, 1000)
+let permissionGranted = false
 
+checkForPermissions()
 checkForTodaysFirstUse()
 
 if (module.hot) {
@@ -22,13 +25,50 @@ function checkClock () {
   const now = moment().format('HH:mm:ss')
 
   if (now === HISTORY_TRIGGER_TIME) {
-    store.dispatch(closeDay())
+    closePreviousDay()
+  }
+}
+
+function checkForPermissions () {
+  if (typeof window === 'undefined' || !window.Notification) {
+    return
+  }
+
+  permissionGranted = window.Notification.permission === 'granted'
+  if (!permissionGranted) {
+    window.Notification.requestPermission((status) => {
+      permissionGranted = status === 'granted'
+    })
   }
 }
 
 function checkForTodaysFirstUse () {
   const storesLastDay = store.getState().today
   if (storesLastDay && moment(storesLastDay).isBefore(moment(), 'day')) {
-    store.dispatch(closeDay())
+    closePreviousDay()
+  }
+}
+
+function closePreviousDay () {
+  store.dispatch(closeDay())
+
+  notify({
+    title: 'Fin de journée !',
+    text: 'Vos objectifs ont été historisés et repartent à zéro.',
+    icon: clockIcon,
+    secondsVisible: 4
+  })
+}
+
+function notify ({ title, text, icon, secondsVisible = 0 }) {
+  if (!permissionGranted) {
+    return
+  }
+
+  const notif = new window.Notification(title, { body: text, tag: 'goal-tracker', icon })
+  if (secondsVisible > 0) {
+    notif.addEventListener('show', () => {
+      setTimeout(() => notif.close(), secondsVisible * 1000)
+    })
   }
 }
