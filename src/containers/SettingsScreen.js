@@ -1,6 +1,7 @@
 import autobind from 'autobind-decorator'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
+import DocumentTitle from 'react-document-title'
 import { Link } from 'react-router'
 import React, { Component } from 'react'
 
@@ -19,7 +20,9 @@ import * as actionCreators from '../action-creators'
 class SettingsScreen extends Component {
   render () {
     return (
-      <h1>Settings coming soon</h1>
+      <DocumentTitle title='Mes paramètres'>
+        <h1>Settings coming soon</h1>
+      </DocumentTitle>
     )
   }
 }

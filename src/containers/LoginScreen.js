@@ -1,5 +1,6 @@
 import autobind from 'autobind-decorator'
 import { connect } from 'react-redux'
+import DocumentTitle from 'react-document-title'
 import React, { Component } from 'react'
 
 import ArrowForward from 'material-ui/svg-icons/navigation/arrow-forward'
@@ -32,36 +33,38 @@ export class LoginScreen extends Component {
       : ''
 
     return (
-      <form onSubmit={this.login}>
-        <Card className='loginScreen'>
-          <CardTitle title='Goal Tracker' subtitle='Connexion' />
-          <CardText>
-            <TextField
-              type='email'
-              onChange={(event) => { this.userEmail = event.target.value }}
-              floatingLabelText='E-mail'
-              fullWidth
-              hintText='mon@email.tld'
-              autoFocus
-              required
-            />
-            <TextField
-              type='password'
-              onChange={(event) => { this.password = event.target.value }}
-              floatingLabelText='Mot de passe'
-              fullWidth
-              hintText='super mot de passe'
-              required
-            />
-          </CardText>
-          <CardActions style={{ textAlign: 'center' }}>
-            <RaisedButton label='Connecte-toi' labelPosition='before' primary
-              icon={logInIcon} type='submit' disabled={loggingIn}
-            />
-          </CardActions>
-        </Card>
-        {snackBar}
-      </form>
+      <DocumentTitle title='Identifiez-vous'>
+        <form onSubmit={this.login}>
+          <Card className='loginScreen'>
+            <CardTitle title='Goal Tracker' subtitle='Connexion' />
+            <CardText>
+              <TextField
+                type='email'
+                onChange={(event) => { this.userEmail = event.target.value }}
+                floatingLabelText='E-mail'
+                fullWidth
+                hintText='mon@email.tld'
+                autoFocus
+                required
+              />
+              <TextField
+                type='password'
+                onChange={(event) => { this.password = event.target.value }}
+                floatingLabelText='Mot de passe'
+                fullWidth
+                hintText='super mot de passe'
+                required
+              />
+            </CardText>
+            <CardActions style={{ textAlign: 'center' }}>
+              <RaisedButton label='Connecte-toi' labelPosition='before' primary
+                icon={logInIcon} type='submit' disabled={loggingIn}
+              />
+            </CardActions>
+          </Card>
+          {snackBar}
+        </form>
+      </DocumentTitle>
     )
   }
 }

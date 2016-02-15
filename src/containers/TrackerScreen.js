@@ -1,4 +1,5 @@
 import { connect } from 'react-redux'
+import DocumentTitle from 'react-document-title'
 import { Link } from 'react-router'
 import React, { Component } from 'react'
 
@@ -25,32 +26,34 @@ export class TrackerScreen extends Component {
   render () {
     const { dispatch, goals, todaysProgress } = this.props
     return (
-      <Card className='goalTracker'>
-        <CardTitle
-          title={formatDate(new Date(), 'LL')}
-          subtitle={<Gauge value={this.overallProgress()} />}
-        />
-        <CardText>
-          {
-            goals.map((goal) => (
-              <GoalTrackerWidget
-                key={goal.id}
-                goal={goal}
-                progress={todaysProgress[goal.id] || 0}
-                onProgress={() => dispatch(progressOnGoal(goal.id))}
-              />
-            ))
-          }
-        </CardText>
-        <CardActions>
-          <RaisedButton label='Historique' secondary
-            icon={<HistoryIcon />} containerElement={<Link to='/history' />}
+      <DocumentTitle title='Mes objectifs du jour'>
+        <Card className='goalTracker'>
+          <CardTitle
+            title={formatDate(new Date(), 'LL')}
+            subtitle={<Gauge value={this.overallProgress()} />}
           />
-          <RaisedButton label='Paramètres'
-            icon={<SettingsIcon />} containerElement={<Link to='/settings' />}
-          />
-        </CardActions>
-      </Card>
+          <CardText>
+            {
+              goals.map((goal) => (
+                <GoalTrackerWidget
+                  key={goal.id}
+                  goal={goal}
+                  progress={todaysProgress[goal.id] || 0}
+                  onProgress={() => dispatch(progressOnGoal(goal.id))}
+                />
+              ))
+            }
+          </CardText>
+          <CardActions>
+            <RaisedButton label='Historique' secondary
+              icon={<HistoryIcon />} containerElement={<Link to='/history' />}
+            />
+            <RaisedButton label='Paramètres'
+              icon={<SettingsIcon />} containerElement={<Link to='/settings' />}
+            />
+          </CardActions>
+        </Card>
+      </DocumentTitle>
     )
   }
 }

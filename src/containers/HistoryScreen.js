@@ -1,4 +1,5 @@
 import { connect } from 'react-redux'
+import DocumentTitle from 'react-document-title'
 import { Link } from 'react-router'
 import React, { Component } from 'react'
 
@@ -11,7 +12,9 @@ import RaisedButton from 'material-ui/RaisedButton'
 class HistoryScreen extends Component {
   render () {
     return (
-      <h1>History coming soon</h1>
+      <DocumentTitle title='Mon historique'>
+        <h1>History coming soon</h1>
+      </DocumentTitle>
     )
   }
 }
