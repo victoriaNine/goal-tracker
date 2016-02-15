@@ -25,8 +25,8 @@ export default class AddSettingDialog extends Component {
     this.state = DEFAULT_STATE
   }
 
-  componentWillReceiveProps (newProps) {
-    // ???
+  componentWillReceiveProps ({ goal }) {
+    this.setState({ ...DEFAULT_STATE, ...goal, keepOpen: goal.id === undefined })
   }
 
   handleChange (event, field, checked) {
