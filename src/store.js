@@ -4,10 +4,10 @@ import moment from 'moment'
 import goalTrackerReducer from './reducers'
 
 const DEFAULT_STATE = {
-  // currentUser: {
-  //   loginState: 'success',
-  //   email: 'christophe@delicious-insights.com'
-  // },
+  currentUser: {
+    loginState: 'success',
+    email: 'christophe@delicious-insights.com'
+  },
   goals: [
     { id: 0, name: 'Apprendre React', target: 5, units: 'aspects' },
     { id: 1, name: 'Apprendre Redux', target: 2, units: 'vidéos' },
