@@ -9,11 +9,29 @@ import ClearIcon from 'material-ui/svg-icons/content/clear'
 import FlatButton from 'material-ui/FlatButton'
 import RaisedButton from 'material-ui/RaisedButton'
 
+import { clearHistory } from '../action-creators'
+import HistoryDay from '../components/HistoryDay'
+
 class HistoryScreen extends Component {
   render () {
     return (
       <DocumentTitle title='Mon historique'>
-        <h1>History coming soon</h1>
+        <div>
+          <FlatButton label='Retour'
+            icon={<ArrowBack />} containerElement={<Link to='/' />}
+          />
+          <Card className='history'>
+            <CardTitle title='Historique' />
+            <CardText>
+              <p>Coming soon: history</p>
+            </CardText>
+            <CardActions>
+              <RaisedButton label='Réinitialiser'
+                icon={<ClearIcon />}
+              />
+            </CardActions>
+          </Card>
+        </div>
       </DocumentTitle>
     )
   }
