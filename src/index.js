@@ -1,5 +1,6 @@
 import getMuiTheme from 'material-ui/styles/getMuiTheme'
 import injectTapEventPlugin from 'react-tap-event-plugin'
+import { install as installOfflineHandling } from 'offline-plugin/runtime'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import { Provider } from 'react-redux'
 import React from 'react'
@@ -9,6 +10,7 @@ import { Router, Route, IndexRoute, browserHistory as history } from 'react-rout
 // DEV NOTE: only required until Material UI 0.16+, as it won't use
 // `onTouchTap` unduly anymore.
 injectTapEventPlugin()
+installOfflineHandling()
 
 import App from './components/App'
 import HistoryScreen from './containers/HistoryScreen'

@@ -1,5 +1,6 @@
 var autoprefixer = require('autoprefixer')
 var CopyWebpackPlugin = require('copy-webpack-plugin')
+var OfflinePlugin = require('offline-plugin')
 var Path = require('path')
 var shared = require('./webpack.config.shared')
 var webpack = require('webpack')
@@ -32,6 +33,7 @@ module.exports = {
         return module.context && module.context.indexOf('node_modules') !== -1
       }
     }),
+    new OfflinePlugin(),
     new webpack.LoaderOptionsPlugin({
       options: {
         postcss: [autoprefixer()]
