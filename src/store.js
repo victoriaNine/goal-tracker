@@ -14,6 +14,7 @@ const DEFAULT_STATE = {
     { id: 1, name: 'Apprendre Redux', target: 2, units: 'vidéos' },
     { id: 2, name: 'Apprendre Webpack', target: 3, units: 'pages de doc' }
   ],
+  today: moment().format('YYYY-MM-DD'),
   todaysProgress: { 0: 1, 1: 1, 2: 1 },
   history: [
     {

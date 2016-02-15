@@ -14,13 +14,21 @@ if (module.hot) {
   })
 }
 
+const HISTORY_TRIGGER_TIME = process.env.NODE_ENV === 'production'
+  ? '00:00:00'
+  : moment().add(10, 'seconds').format('HH:mm:ss')
+
 function checkClock () {
   const now = moment().format('HH:mm:ss')
-  console.log('checking', now)
 
-  // Votre code ici
+  if (now === HISTORY_TRIGGER_TIME) {
+    store.dispatch(closeDay())
+  }
 }
 
 function checkForTodaysFirstUse () {
-  // Votre code ici
+  const storesLastDay = store.getState().today
+  if (storesLastDay && moment(storesLastDay).isBefore(moment(), 'day')) {
+    store.dispatch(closeDay())
+  }
 }

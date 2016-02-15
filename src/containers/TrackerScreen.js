@@ -24,12 +24,12 @@ export class TrackerScreen extends Component {
   }
 
   render () {
-    const { dispatch, goals, todaysProgress } = this.props
+    const { dispatch, goals, today, todaysProgress } = this.props
     return (
       <DocumentTitle title='Mes objectifs du jour'>
         <Card className='goalTracker'>
           <CardTitle
-            title={formatDate(new Date(), 'LL')}
+            title={formatDate(today, 'LL')}
             subtitle={<Gauge value={this.overallProgress()} />}
           />
           <CardText>
@@ -58,6 +58,6 @@ export class TrackerScreen extends Component {
   }
 }
 
-const mapStateToPops = ({ goals, todaysProgress }) => ({ goals, todaysProgress })
+const mapStateToPops = ({ goals, today, todaysProgress }) => ({ goals, today, todaysProgress })
 
 export default connect(mapStateToPops)(TrackerScreen)

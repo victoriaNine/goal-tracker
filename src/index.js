@@ -16,6 +16,8 @@ import HomeScreen from './containers/HomeScreen'
 import SettingsScreen from './containers/SettingsScreen'
 import store from './store'
 
+import './lib/clock'
+
 function requireAuth (nextState, replace) {
   if (store.getState().currentUser.loginState !== 'success') {
     replace('/')
