@@ -14,6 +14,7 @@ import HistoryDay from '../components/HistoryDay'
 
 class HistoryScreen extends Component {
   render () {
+    const { goals, history, dispatch } = this.props
     return (
       <DocumentTitle title='Mon historique'>
         <div>
@@ -23,13 +24,20 @@ class HistoryScreen extends Component {
           <Card className='history'>
             <CardTitle title='Historique' />
             <CardText>
-              <p>Coming soon: history</p>
+              {history.map((dayStats) =>
+                <HistoryDay key={dayStats.date} goals={goals} stats={dayStats} />
+              )}
+              {history.length === 0 && (
+                <p>Aucun historique disponible</p>
+              )}
             </CardText>
-            <CardActions>
-              <RaisedButton label='Réinitialiser'
-                icon={<ClearIcon />}
-              />
-            </CardActions>
+            {history.length > 0 && (
+              <CardActions>
+                <RaisedButton label='Réinitialiser'
+                  icon={<ClearIcon />} onClick={() => dispatch(clearHistory())}
+                />
+              </CardActions>
+            )}
           </Card>
         </div>
       </DocumentTitle>
