@@ -21,6 +21,7 @@ export function updateGoal (id, name, target, units) {
 // Using the app everyday
 
 export const CLEAR_HISTORY = '@@GOALTRACKER/HISTORY_CLEAR'
+export const CLOSE_DAY = '@@GOALTRACKER/CLOSE_DAY'
 export const LOGIN_FAILURE = '@@GOALTRACKER/AUTH_LOGIN_FAILURE'
 export const LOGIN_START = '@@GOALTRACKER/AUTH_LOGIN_START'
 export const LOGIN_SUCCESS = '@@GOALTRACKER/AUTH_LOGIN_SUCCESS'
@@ -29,6 +30,10 @@ export const PROGRESS = '@@GOALTRACKER/PROGRESS'
 
 export function clearHistory () {
   return { type: CLEAR_HISTORY }
+}
+
+export function closeDay () {
+  return { type: CLOSE_DAY }
 }
 
 export function logIn (email, password) {
