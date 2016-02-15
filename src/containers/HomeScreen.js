@@ -1,18 +1,17 @@
+import { connect } from 'react-redux'
 import React, { Component } from 'react'
 
 import LoginScreen from './LoginScreen'
 import TrackerScreen from './TrackerScreen'
 
-import store from '../store'
-
 export class HomeScreen extends Component {
   render () {
-    const { currentUser: { loginState }, goals, todaysProgress } = store
-
-    return loginState === 'success'
-      ? <TrackerScreen goals={goals} todaysProgress={todaysProgress} />
+    return this.props.loginState === 'success'
+      ? <TrackerScreen />
       : <LoginScreen />
   }
 }
 
-export default HomeScreen
+const mapStateToProps = ({ currentUser: { loginState } }) => ({ loginState })
+
+export default connect(mapStateToProps)(HomeScreen)

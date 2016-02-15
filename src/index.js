@@ -1,6 +1,7 @@
 import getMuiTheme from 'material-ui/styles/getMuiTheme'
 import injectTapEventPlugin from 'react-tap-event-plugin'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
+import { Provider } from 'react-redux'
 import React from 'react'
 import { render } from 'react-dom'
 
@@ -9,11 +10,14 @@ import { render } from 'react-dom'
 injectTapEventPlugin()
 
 import HomeScreen from './containers/HomeScreen'
+import store from './store'
 
 render(
-  <MuiThemeProvider muiTheme={getMuiTheme()}>
-    <HomeScreen />
-  </MuiThemeProvider>,
+  <Provider store={store}>
+    <MuiThemeProvider muiTheme={getMuiTheme()}>
+      <HomeScreen />
+    </MuiThemeProvider>
+  </Provider>,
   document.getElementById('root')
 )
 
