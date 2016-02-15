@@ -7,10 +7,47 @@ import HistoryIcon from 'material-ui/svg-icons/action/history'
 import RaisedButton from 'material-ui/RaisedButton'
 import SettingsIcon from 'material-ui/svg-icons/action/settings'
 
+import { formatDate, getDayCounts } from '../lib/helpers'
+import Gauge from '../components/Gauge'
+import GoalTrackerWidget from '../components/GoalTrackerWidget'
+
 export class TrackerScreen extends Component {
+  overallProgress () {
+    const { todaysProgress, goals } = this.props
+    const [totalProgress, totalTarget] = getDayCounts(todaysProgress, goals)
+
+    return totalTarget === 0 ? 0 : Math.floor(totalProgress * 100 / totalTarget)
+  }
+
   render () {
-    // Votre code ici, en remplacement
-    return <p>TrackerScreen coming soon</p>
+    const { goals, todaysProgress } = this.props
+    return (
+      <Card className='goalTracker'>
+        <CardTitle
+          title={formatDate(new Date(), 'LL')}
+          subtitle={<Gauge value={this.overallProgress()} />}
+        />
+        <CardText>
+          {
+            goals.map((goal) => (
+              <GoalTrackerWidget
+                key={goal.id}
+                goal={goal}
+                progress={todaysProgress[goal.id] || 0}
+              />
+            ))
+          }
+        </CardText>
+        <CardActions>
+          <RaisedButton label='Historique' secondary
+            icon={<HistoryIcon />}
+          />
+          <RaisedButton label='Paramètres'
+            icon={<SettingsIcon />}
+          />
+        </CardActions>
+      </Card>
+    )
   }
 }
 

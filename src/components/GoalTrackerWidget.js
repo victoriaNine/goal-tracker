@@ -7,9 +7,9 @@ import FloatingActionButton from 'material-ui/FloatingActionButton'
 import Gauge from './Gauge'
 import { GoalPropType, nonNegativeInteger } from '../prop-types'
 
-const GoalTrackerWidget = ({ FIXME }) => {
+const GoalTrackerWidget = ({ goal: { name, units, target }, progress, onProgress }) => {
   const adderComponent = target > progress
-    ? <FloatingActionButton mini secondary><ContentAdd /></FloatingActionButton>
+    ? <FloatingActionButton mini secondary onClick={onProgress}><ContentAdd /></FloatingActionButton>
     : <FloatingActionButton mini disabled><ActionThumbUp /></FloatingActionButton>
 
   return (
