@@ -25,7 +25,13 @@ function requireAuth (nextState, replace) {
 render(
   <Provider store={store}>
     <MuiThemeProvider muiTheme={getMuiTheme()}>
-      <HomeScreen />
+      <Router history={history}>
+        <Route path='/' component={App}>
+          <IndexRoute component={HomeScreen} />
+          <Route path='settings' component={SettingsScreen} onEnter={requireAuth} />
+          <Route path='history' component={HistoryScreen} onEnter={requireAuth} />
+        </Route>
+      </Router>
     </MuiThemeProvider>
   </Provider>,
   document.getElementById('root')
