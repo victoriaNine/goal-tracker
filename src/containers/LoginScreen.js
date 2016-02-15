@@ -1,3 +1,5 @@
+import autobind from 'autobind-decorator'
+import { connect } from 'react-redux'
 import React, { Component } from 'react'
 
 import ArrowForward from 'material-ui/svg-icons/navigation/arrow-forward'
@@ -5,17 +7,26 @@ import { Card, CardActions, CardText, CardTitle } from 'material-ui/Card'
 import RaisedButton from 'material-ui/RaisedButton'
 import TextField from 'material-ui/TextField'
 
+import { logIn } from '../action-creators'
+
 import '../styles/LoginScreen.styl'
 
 export class LoginScreen extends Component {
+  @autobind
+  login (event) {
+    event.preventDefault()
+    this.props.dispatch(logIn(this.userEmail, this.password))
+  }
+
   render () {
     return (
-      <form>
+      <form onSubmit={this.login}>
         <Card className='loginScreen'>
           <CardTitle title='Goal Tracker' subtitle='Connexion' />
           <CardText>
             <TextField
               type='email'
+              onChange={(event) => { this.userEmail = event.target.value }}
               floatingLabelText='E-mail'
               fullWidth
               hintText='mon@email.tld'
@@ -24,6 +35,7 @@ export class LoginScreen extends Component {
             />
             <TextField
               type='password'
+              onChange={(event) => { this.password = event.target.value }}
               floatingLabelText='Mot de passe'
               fullWidth
               hintText='super mot de passe'
@@ -41,4 +53,4 @@ export class LoginScreen extends Component {
   }
 }
 
-export default LoginScreen
+export default connect()(LoginScreen)
