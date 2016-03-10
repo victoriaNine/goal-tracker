@@ -1,0 +1,26 @@
+<!DOCTYPE html><html lang="en"><head><title>components/HistoryDay.spec</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="components/HistoryDay.spec"><meta name="groc-project-path" content="src/components/HistoryDay.spec.js"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path">src/components/HistoryDay.spec.js</div></div><div id="document"><div class="segment"><div class="code"><div class="wrapper"><span class="hljs-keyword">import</span> enzymeToJSON <span class="hljs-keyword">from</span> <span class="hljs-string">'enzyme-to-json'</span>
+<span class="hljs-keyword">import</span> jestExpect <span class="hljs-keyword">from</span> <span class="hljs-string">'jest-matchers'</span>
+<span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>
+<span class="hljs-keyword">import</span> { shallow } <span class="hljs-keyword">from</span> <span class="hljs-string">'enzyme'</span>
+<span class="hljs-keyword">import</span> sinon <span class="hljs-keyword">from</span> <span class="hljs-string">'sinon'</span>
+
+<span class="hljs-keyword">import</span> HistoryDay <span class="hljs-keyword">from</span> <span class="hljs-string">'../../src/components/HistoryDay'</span>
+
+describe(<span class="hljs-string">'&lt;HistoryDay /&gt;'</span>, () =&gt; {
+  const goals = [
+    { id: 0, name: <span class="hljs-string">'Demo goal 1'</span>, target: 5, units: <span class="hljs-string">'wombats'</span> },
+    { id: 1, name: <span class="hljs-string">'Demo goal 2'</span>, target: 10, units: <span class="hljs-string">'weazels'</span> }
+  ]
+
+  it(<span class="hljs-string">'should otherwise match the expected snapshot'</span>, () =&gt; {
+    const mock = sinon.useFakeTimers()
+    try {
+      const stats = { date: <span class="hljs-string">'2017-03-23'</span>, progresses: { 0: [1, 5] } }
+      const wrapper = shallow(&lt;HistoryDay goals={goals} stats={stats} /&gt;)
+
+      jestExpect(enzymeToJSON(wrapper)).toMatchSnapshot()
+    } finally {
+      mock.restore()
+    }
+  })
+})</div></div></div></div></body></html>

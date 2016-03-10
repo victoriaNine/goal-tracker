@@ -1,6 +1,11 @@
+// Utilitaires pour la configuration Webpack
+// =========================================
+
 var fs = require('fs')
 var path = require('path')
 
+// Personnalisation de la configuration de babel-loader.
+//
 exports.getAdjustedBabelOptions = function getAdjustedBabelOptions () {
   var babelConfig = JSON.parse(fs.readFileSync(path.join(__dirname, 'package.json'))).babel
   babelConfig.presets.forEach(function (preset) {

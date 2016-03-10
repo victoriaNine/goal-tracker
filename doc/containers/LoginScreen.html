@@ -1,0 +1,111 @@
+<!DOCTYPE html><html lang="en"><head><title>containers/LoginScreen</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="containers/LoginScreen"><meta name="groc-project-path" content="src/containers/LoginScreen.js"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path">src/containers/LoginScreen.js</div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><h1 id="connexion-conteneur">Connexion (conteneur)</h1></div></div></div><div class="segment"><div class="code"><div class="wrapper"><span class="hljs-keyword">import</span> autobind <span class="hljs-keyword">from</span> <span class="hljs-string">'autobind-decorator'</span>
+<span class="hljs-keyword">import</span> { connect } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-redux'</span>
+<span class="hljs-keyword">import</span> DocumentTitle <span class="hljs-keyword">from</span> <span class="hljs-string">'react-document-title'</span>
+<span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>
+
+<span class="hljs-keyword">import</span> ArrowForward <span class="hljs-keyword">from</span> <span class="hljs-string">'material-ui/svg-icons/navigation/arrow-forward'</span>
+<span class="hljs-keyword">import</span> { Card, CardActions, CardText, CardTitle } <span class="hljs-keyword">from</span> <span class="hljs-string">'material-ui/Card'</span>
+<span class="hljs-keyword">import</span> RaisedButton <span class="hljs-keyword">from</span> <span class="hljs-string">'material-ui/RaisedButton'</span>
+<span class="hljs-keyword">import</span> Snackbar <span class="hljs-keyword">from</span> <span class="hljs-string">'material-ui/Snackbar'</span>
+<span class="hljs-keyword">import</span> TextField <span class="hljs-keyword">from</span> <span class="hljs-string">'material-ui/TextField'</span>
+
+<span class="hljs-keyword">import</span> { logIn } <span class="hljs-keyword">from</span> <span class="hljs-string">'../action-creators'</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Remarquez l’injection CSS à la volée, depuis une feuille de style
+Stylus, via un simple import.  C’est grâce à la combinaison de plusieurs
+loaders Webpack : <code>stylus-loader</code>, pour transformer Stylus en CSS classique,
+<code>css-loader</code>, qui transforme la CSS en module JS avec exports des règles, et
+<code>style-loader</code>, qui va injecter ces règles à la volée dans le DOM, sur les
+éléments concernés, garantissant leur application quel que soit le contexte.</p>
+<p>En mode production, on configure le <code>ExtractTextPlugin</code> pour sortir toutes
+les CSS issues de feuilles autonomes en un seul fichier CSS optimisé, pour permettre
+l’application de styles dès le chargement, sans attendre que JS s’exécute.</p></div></div><div class="code"><div class="wrapper"><span class="hljs-keyword">import</span> <span class="hljs-string">'../styles/LoginScreen.styl'</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h2 id="le-composant-conteneur">Le composant conteneur</h2></div></div></div><div class="segment"><div class="code"><div class="wrapper"><span class="hljs-keyword">export</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">LoginScreen</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>La syntaxe ci-dessous utilise la
+<a href="https://github.com/wycats/javascript-decorators">proposition décorateurs pour ES8+</a>
+qui facilite l’utilisation de décoration par fonctions d’ordre supérieur
+(<em>Higher-Order Functions</em>, ou <em>HOF</em> pour faire court).  La syntaxe ne fournit aucun
+décorateur particulier, car ils sont appliqués à l&#39;exécution, et peuvent donc être
+codés librement pour “étendre” le langage.</p>
+<p>Nous utilisons ici le décorateur <code>autobind</code> fourni par un module ciblé,
+<a href="https://www.npmjs.com/package/autobind-decorator"><code>autobind-decorator</code></a>, mais
+on trouve aussi des modules plus riches qui tentent de fournir tous les
+“<a href="https://www.npmjs.com/package/core-decorators">décorateurs usuels</a>”.
+Le principe du <em>auto-binding</em> est qu’à l&#39;instanciation, la propriété est
+automatiquement redéfinie sur l&#39;instance (plutôt que déléguée au prototype)
+avec une version <em>bound</em> de la fonction d&#39;origine.  Ainsi, on peut librement
+passer une référence à la méthode sans garantir manuellement le <code>this</code>.  C&#39;est
+notamment très utile pour les <em>props</em> JSX de type gestionnaire d&#39;événement.</p>
+<p>Notez que ce décorateur peut aussi marcher au niveau global de la classe, et
+s&#39;applique alors à toutes les méthodes.  Mais c&#39;est une approche bulldozer,
+rarement justifiée.</p>
+<p>Notez que Babel 6 ne gère pas encore les décorateurs, car la spec et la syntaxe
+sont en train de subir une évolution massive.  Il est nécessaire d’utiliser un
+<a href="https://github.com/loganfsmyth/babel-plugin-transform-decorators-legacy">plugin Babel de transformation rétrocompatible</a>.</p></div></div><div class="code"><div class="wrapper">  @autobind
+  login (event) {</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>On commence par empêcher le traitement par défaut de l&#39;événement <code>submit</code>,
+qui déclencherait un envoi du formulaire au serveur.  Et <strong>non, on n’utilise
+pas <code>return false</code></strong>, qui est une extension jQuery qui, en plus, appellerait
+stopPropagation(), ce qui n’est pas souhaitable (et ne marche pas sans jQuery).</p></div></div><div class="code"><div class="wrapper">    event.preventDefault()
+    <span class="hljs-keyword">this</span>.props.dispatch(logIn(<span class="hljs-keyword">this</span>.userEmail, <span class="hljs-keyword">this</span>.password))
+  }
+
+  render () {</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>On définit quelques flags et éléments variables de notre UI suivant
+l’étape de login en cours : délogué, login en cours, login réussi, login
+échoué.</p></div></div><div class="code"><div class="wrapper">    <span class="hljs-keyword">const</span> { loginState } = <span class="hljs-keyword">this</span>.props
+    <span class="hljs-keyword">const</span> loggingIn = loginState === <span class="hljs-string">'pending'</span>
+    <span class="hljs-keyword">const</span> logInIcon = loggingIn ? <span class="hljs-literal">null</span> : <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-title">ArrowForward</span> /&gt;</span></span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>En cas d’échec explicite, une <em><a href="http://www.material-ui.com/#/components/snackbar">snackbar</a></em>
+apparaîtra 2s en bas de la fenêtre, pour nous signifier le souci.</p></div></div><div class="code"><div class="wrapper">    <span class="hljs-keyword">const</span> snackBar = loginState === <span class="hljs-string">'failure'</span>
+      ? <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-title">Snackbar</span>
+        <span class="hljs-attribute">open</span>
+        <span class="hljs-attribute">message</span>=<span class="hljs-value">'Identifiant ou mot de passe invalide'</span>
+        <span class="hljs-attribute">autoHideDuration</span>=<span class="hljs-value">{2000}</span>
+        /&gt;</span>
+      : ''
+
+    return (</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Enrobage par un
+<a href="https://github.com/gaearon/react-document-title"><code>&lt;DocumentTitle&gt;</code></a>
+pour modifier automatiquement le titre de la fenêtre lorsqu’on affiche
+ce composant conteneur.</p>
+<p>Notez l&#39;absence de <em>binding</em> explicite pour <code>this.login</code>, la méthode
+étant décorée par <code>autobind</code>.</p></div></div><div class="code"><div class="wrapper">      &lt;DocumentTitle title=<span class="hljs-string">'Identifiez-vous'</span>&gt;
+        <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-title">form</span> <span class="hljs-attribute">onSubmit</span>=<span class="hljs-value">{this.login}</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-title">Card</span> <span class="hljs-attribute">className</span>=<span class="hljs-value">'loginScreen'</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-title">CardTitle</span> <span class="hljs-attribute">title</span>=<span class="hljs-value">'Goal Tracker'</span> <span class="hljs-attribute">subtitle</span>=<span class="hljs-value">'Connexion'</span> /&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-title">CardText</span>&gt;</span>
+              <span class="hljs-tag">&lt;<span class="hljs-title">TextField</span>
+                <span class="hljs-attribute">type</span>=<span class="hljs-value">'email'</span></span></span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>On souhaite éviter de faire des <em>controlled fields</em> connectés
+de façon trop étroite à l&#39;état transient (<code>this.state</code>), aussi
+on se contente de tenir à jour les valeurs dans des propriétés
+(au sens JS) libres du composant (<code>userEmail&#39;,</code>password`).</p></div></div><div class="code"><div class="wrapper">                onChange={(event) =&gt; { <span class="hljs-keyword">this</span>.userEmail = event.target.value }}
+                floatingLabelText=<span class="hljs-string">'E-mail'</span>
+                fullWidth
+                hintText=<span class="hljs-string">'mon@email.tld'</span>
+                autoFocus
+                required
+              /&gt;
+              <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-title">TextField</span>
+                <span class="hljs-attribute">type</span>=<span class="hljs-value">'password'</span>
+                <span class="hljs-attribute">onChange</span>=<span class="hljs-value">{(event)</span> =&gt;</span> { this.password = event.target.value }}
+                floatingLabelText='Mot de passe'
+                fullWidth
+                hintText='super mot de passe'
+                required
+              /&gt;
+            <span class="hljs-tag">&lt;/<span class="hljs-title">CardText</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-title">CardActions</span> <span class="hljs-attribute">style</span>=<span class="hljs-value">{{</span> <span class="hljs-attribute">textAlign:</span> '<span class="hljs-attribute">center</span>' }}&gt;</span>
+              <span class="hljs-tag">&lt;<span class="hljs-title">RaisedButton</span> <span class="hljs-attribute">label</span>=<span class="hljs-value">'Connecte-toi'</span> <span class="hljs-attribute">labelPosition</span>=<span class="hljs-value">'before'</span> <span class="hljs-attribute">primary</span>
+                <span class="hljs-attribute">icon</span>=<span class="hljs-value">{logInIcon}</span> <span class="hljs-attribute">type</span>=<span class="hljs-value">'submit'</span> <span class="hljs-attribute">disabled</span>=<span class="hljs-value">{loggingIn}</span>
+              /&gt;</span>
+            <span class="hljs-tag">&lt;/<span class="hljs-title">CardActions</span>&gt;</span>
+          <span class="hljs-tag">&lt;/<span class="hljs-title">Card</span>&gt;</span>
+          {snackBar}
+        <span class="hljs-tag">&lt;/<span class="hljs-title">form</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-title">DocumentTitle</span>&gt;</span>
+    )</span>
+  }
+}</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h2 id="connexion-au-store-redux">Connexion au <em>store</em> Redux</h2></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>C’est <a href="https://github.com/reactjs/react-redux/blob/master/docs/api.md#connectmapstatetoprops-mapdispatchtoprops-mergeprops-options"><code>connect(…)</code></a>,
+fourni par Redux, qui fait les connexions nécessaires pour nous
+fournir les propriétés éventuelles (ici, aucune ne nous intéresse), implémenter
+notre <code>shouldComponentUpdate(…)</code>, mais aussi et surtout nous fournir une propriété
+<code>dispatch(…)</code>, pré-associée au <em>store</em> Redux transmis via le contexte React.  On en
+a besoin ici dans <code>logIn()</code> pour déclencher l’évolution du store à la “connexion”,
+mais aussi pour récupérer le chemin <code>currentUser.loginState</code> de l’état global,
+afin de réagir visuellement aux étapes successives du login asynchrone.</p></div></div><div class="code"><div class="wrapper"><span class="hljs-keyword">const</span> mapStateToProps = ({ currentUser: { loginState } }) =&gt; ({ loginState })
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> connect(mapStateToProps)(LoginScreen)</div></div></div></div></body></html>

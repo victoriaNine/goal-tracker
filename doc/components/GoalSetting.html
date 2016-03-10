@@ -1,0 +1,35 @@
+<!DOCTYPE html><html lang="en"><head><title>components/GoalSetting</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="components/GoalSetting"><meta name="groc-project-path" content="src/components/GoalSetting.js"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path">src/components/GoalSetting.js</div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><h1 id="paramtrage-dun-objectif">Paramétrage d’un objectif</h1></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Section de l&#39;écran de paramétrage, dédiée à un objectif.
+Fournit notamment le descriptif de l&#39;objectif et le menu déroulant
+pour les actions de modification et suppression.</p></div></div><div class="code"><div class="wrapper"><span class="hljs-keyword">import</span> React, { PropTypes } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>
+
+<span class="hljs-keyword">import</span> DeleteIcon <span class="hljs-keyword">from</span> <span class="hljs-string">'material-ui/svg-icons/content/clear'</span>
+<span class="hljs-keyword">import</span> EditIcon <span class="hljs-keyword">from</span> <span class="hljs-string">'material-ui/svg-icons/content/create'</span>
+<span class="hljs-keyword">import</span> { grey400 } <span class="hljs-keyword">from</span> <span class="hljs-string">'material-ui/styles/colors'</span>
+<span class="hljs-keyword">import</span> IconButton <span class="hljs-keyword">from</span> <span class="hljs-string">'material-ui/IconButton'</span>
+<span class="hljs-keyword">import</span> IconMenu <span class="hljs-keyword">from</span> <span class="hljs-string">'material-ui/IconMenu'</span>
+<span class="hljs-keyword">import</span> { ListItem } <span class="hljs-keyword">from</span> <span class="hljs-string">'material-ui/List'</span>
+<span class="hljs-keyword">import</span> MenuItem <span class="hljs-keyword">from</span> <span class="hljs-string">'material-ui/MenuItem'</span>
+<span class="hljs-keyword">import</span> MoreVertIcon <span class="hljs-keyword">from</span> <span class="hljs-string">'material-ui/svg-icons/navigation/more-vert'</span>
+
+<span class="hljs-keyword">import</span> { GoalPropType } <span class="hljs-keyword">from</span> <span class="hljs-string">'../prop-types'</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Notez la déstructuration profonde…</p></div></div><div class="code"><div class="wrapper"><span class="hljs-keyword">const</span> GoalSetting = ({ goal: { name, target, units }, onDeleteClick, onEditClick }) =&gt; {
+  <span class="hljs-keyword">const</span> rightIconMenu = (
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-title">IconMenu</span> <span class="hljs-attribute">iconButtonElement</span>=<span class="hljs-value">{&lt;IconButton</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-title">MoreVertIcon</span> <span class="hljs-attribute">color</span>=<span class="hljs-value">{grey400}</span> /&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-title">IconButton</span>&gt;</span>}&gt;
+      <span class="hljs-tag">&lt;<span class="hljs-title">MenuItem</span> <span class="hljs-attribute">leftIcon</span>=<span class="hljs-value">{&lt;EditIcon</span> /&gt;</span>} onClick={onEditClick}&gt;Modifier<span class="hljs-tag">&lt;/<span class="hljs-title">MenuItem</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-title">MenuItem</span> <span class="hljs-attribute">leftIcon</span>=<span class="hljs-value">{&lt;DeleteIcon</span> /&gt;</span>} onClick={onDeleteClick}&gt;Supprimer<span class="hljs-tag">&lt;/<span class="hljs-title">MenuItem</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-title">IconMenu</span>&gt;</span>
+  )</span>
+
+  <span class="hljs-keyword">return</span> (
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-title">ListItem</span>
+      <span class="hljs-attribute">primaryText</span>=<span class="hljs-value">{name}</span>
+      <span class="hljs-attribute">secondaryText</span>=<span class="hljs-value">{`${target}</span> ${<span class="hljs-attribute">units</span>}`}
+      <span class="hljs-attribute">rightIconButton</span>=<span class="hljs-value">{rightIconMenu}</span>
+    /&gt;</span>
+  )</span>
+}</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Comme toujours, on définit les propriétés attendues/autorisées pour validation.</p></div></div><div class="code"><div class="wrapper">GoalSetting.propTypes = {
+  goal: GoalPropType,
+  onDeleteClick: PropTypes.func.isRequired,
+  onEditClick: PropTypes.func.isRequired
+}
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> GoalSetting</div></div></div></div></body></html>

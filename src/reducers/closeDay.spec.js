@@ -1,10 +1,19 @@
+// Historisation quotidienne (spec reducer)
+// ========================================
+
 import { expect } from 'chai'
 import moment from 'moment'
 
 import { closeDay } from '../../src/action-creators'
 import reducer from '../../src/reducers/closeDay'
 
+// Le *reducer* est censé…
 describe('Close Day reducer', () => {
+  // …historiser la journée courante
+  // -------------------------------
+  //
+  // (calcul des données à historiser, ajout en début d’historique,
+  // réinitialisation des données du jour courant)
   it('should properly add the current progressions to the history and reset for a new day', () => {
     const initialState = {
       goals: [

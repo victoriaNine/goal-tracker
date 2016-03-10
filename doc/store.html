@@ -1,0 +1,86 @@
+<!DOCTYPE html><html lang="en"><head><title>store</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content=""><meta name="groc-document-path" content="store"><meta name="groc-project-path" content="src/store.js"><link rel="stylesheet" type="text/css" media="all" href="assets/style.css"><script type="text/javascript" src="assets/behavior.js"></script><body><div id="meta"><div class="file-path">src/store.js</div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><h1 id="tat-central-redux">État central Redux</h1></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>L’état consolidé de l’application est géré par <a href="http://redux.js.org/">Redux</a>.
+La <a href="http://redux.js.org/docs/basics/DataFlow.html">seule manière de le faire évoluer</a>
+est d’appeler sa méthode <code>dispatch(…)</code> en lui transmettant un
+<a href="http://redux.js.org/docs/basics/Actions.html">descripteur d’action</a>
+(normalement fourni par une des fonctions de <code>action-creators.js</code>).</p>
+<p>L’état en question est <em>immutable</em> : il n’est jamais modifié en place,
+mais génère à chaque fois une nouvelle version de lui-même, si besoin.</p>
+<p>Le descriptif de ces évolutions est fourni par les
+<a href="http://redux.js.org/docs/basics/Reducers.html"><em>reducers</em></a>,
+qui sont combinés pour fournir un <em>reducer</em> unique, utilisé à la création du
+<em>store</em> Redux.</p></div></div><div class="code"><div class="wrapper"><span class="hljs-keyword">import</span> { applyMiddleware, compose, createStore } <span class="hljs-keyword">from</span> <span class="hljs-string">'redux'</span>
+<span class="hljs-keyword">import</span> moment <span class="hljs-keyword">from</span> <span class="hljs-string">'moment'</span>
+<span class="hljs-keyword">import</span> { persistentReducer, persistentStore } <span class="hljs-keyword">from</span> <span class="hljs-string">'redux-pouchdb'</span>
+<span class="hljs-keyword">import</span> PouchDB <span class="hljs-keyword">from</span> <span class="hljs-string">'pouchdb'</span>
+<span class="hljs-keyword">import</span> thunkMiddleware <span class="hljs-keyword">from</span> <span class="hljs-string">'redux-thunk'</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Le <em>reducer</em> principal, qui pilote toutes les évolutions de l’état.</p></div></div><div class="code"><div class="wrapper"><span class="hljs-keyword">import</span> goalTrackerReducer <span class="hljs-keyword">from</span> <span class="hljs-string">'./reducers'</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>On persiste l’état côté client (dans le navigateur) grâce à
+<a href="http://pouchdb.com/">PouchDB</a>.
+Celui-ci tentera une persistence dans
+<a href="https://developer.mozilla.org/fr/docs/IndexedDB">IndexedDB</a>,
+ou à défaut <a href="https://developer.mozilla.org/en-US/docs/Web/API/Storage/LocalStorage">LocalStorage</a>.
+La synchro entre la couche de persistence et le <em>store</em> Redux est
+<a href="https://github.com/vicentedealencar/redux-pouchdb">automatique</a>
+une fois les connexions appropriées mises en place.  En configurant la base
+PouchDB pour se répliquer avec un serveur (PouchDB ou CouchDB) distant, on
+aurait même une synchro automatique avec le côté serveur.</p></div></div><div class="code"><div class="wrapper"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> PouchDB(<span class="hljs-string">'goal-tracker'</span>)</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>État par défaut, utile pour notre développement mais qui serait sûrement
+beaucoup plus réduit en production.</p></div></div><div class="code"><div class="wrapper"><span class="hljs-keyword">const</span> DEFAULT_STATE = {
+  currentUser: {
+    loginState: <span class="hljs-string">'success'</span>,
+    email: <span class="hljs-string">'christophe@delicious-insights.com'</span>
+  },
+  goals: [
+    { id: <span class="hljs-number">0</span>, name: <span class="hljs-string">'Apprendre React'</span>, target: <span class="hljs-number">5</span>, units: <span class="hljs-string">'aspects'</span> },
+    { id: <span class="hljs-number">1</span>, name: <span class="hljs-string">'Apprendre Redux'</span>, target: <span class="hljs-number">2</span>, units: <span class="hljs-string">'vidéos'</span> },
+    { id: <span class="hljs-number">2</span>, name: <span class="hljs-string">'Apprendre Webpack'</span>, target: <span class="hljs-number">3</span>, units: <span class="hljs-string">'pages de doc'</span> }
+  ],
+  today: moment().format(<span class="hljs-string">'YYYY-MM-DD'</span>),
+  todaysProgress: { <span class="hljs-number">0</span>: <span class="hljs-number">1</span>, <span class="hljs-number">1</span>: <span class="hljs-number">1</span>, <span class="hljs-number">2</span>: <span class="hljs-number">1</span> },
+  history: [
+    {
+      date: moment().subtract(<span class="hljs-number">1</span>, <span class="hljs-string">'day'</span>).format(<span class="hljs-string">'YYYY-MM-DD'</span>),
+      progresses: {
+        <span class="hljs-number">0</span>: [<span class="hljs-number">2</span>, <span class="hljs-number">5</span>],
+        <span class="hljs-number">1</span>: [<span class="hljs-number">1</span>, <span class="hljs-number">2</span>]
+      }
+    },
+    {
+      date: moment().subtract(<span class="hljs-number">2</span>, <span class="hljs-string">'days'</span>).format(<span class="hljs-string">'YYYY-MM-DD'</span>),
+      progresses: {
+        <span class="hljs-number">0</span>: [<span class="hljs-number">4</span>, <span class="hljs-number">5</span>],
+        <span class="hljs-number">1</span>: [<span class="hljs-number">1</span>, <span class="hljs-number">2</span>],
+        <span class="hljs-number">2</span>: [<span class="hljs-number">2</span>, <span class="hljs-number">3</span>]
+      }
+    },
+    {
+      date: moment().subtract(<span class="hljs-number">3</span>, <span class="hljs-string">'days'</span>).format(<span class="hljs-string">'YYYY-MM-DD'</span>),
+      progresses: {
+        <span class="hljs-number">0</span>: [<span class="hljs-number">3</span>, <span class="hljs-number">5</span>],
+        <span class="hljs-number">1</span>: [<span class="hljs-number">2</span>, <span class="hljs-number">2</span>],
+        <span class="hljs-number">2</span>: [<span class="hljs-number">1</span>, <span class="hljs-number">3</span>]
+      }
+    }
+  ]
+}</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Pile de <em>middlewares</em> (traitements intermédiaires) à associer
+au <em>store</em>.  On y trouve ici la persistance dans PouchDB mais
+aussi la connexion aux
+<a href="https://github.com/zalmoxisus/redux-devtools-extension">Redux Dev Tools</a>,
+s’ils sont installés dans le navigateur.</p></div></div><div class="code"><div class="wrapper"><span class="hljs-keyword">const</span> enhancer = compose(
+  persistentStore(db),
+  applyMiddleware(thunkMiddleware),
+  <span class="hljs-keyword">typeof</span> <span class="hljs-built_in">window</span> !== <span class="hljs-string">'undefined'</span> &amp;&amp; <span class="hljs-built_in">window</span>.devToolsExtension
+    ? <span class="hljs-built_in">window</span>.devToolsExtension()
+    : (x) =&gt; x
+)</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Création à proprement parler du <em>store</em>, en fournissant son
+<em>reducer</em> (au minimum), un état par défaut et la pile de <em>middlewares</em>
+à y injecter.</p>
+<p>Afin de finaliser la synchronisation entre le <em>store</em> Redux et
+PouchDB, on doit enrober les <em>reducers</em> dont le résultat
+doit être synchronisé par le <code>persistentReducer</code> exporté par <code>redux-pouchdb</code>.
+Comme ici l’ensemble des actions est pertinent, on n’enrobe qu’une fois,
+au niveau du <em>reducer</em> consolidé.</p>
+<p>Par ailleurs, au cas où la fonction de <em>reducer</em> global serait techniquement
+anonyme (ce qui, de fait, est le cas des fonctions produites par <code>reduceReducers</code>),
+on précise une clé d’identification explicite, qui évitera les soucis de stockage
+vers PouchDB (par défaut, redux-pouchdb utilise le nom de la fonction <em>reducer</em>).</p></div></div><div class="code"><div class="wrapper"><span class="hljs-keyword">const</span> store = createStore(
+  persistentReducer(goalTrackerReducer, <span class="hljs-string">'GoalTracker'</span>),
+  DEFAULT_STATE, enhancer
+)</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Le <em>store</em> est l’export par défaut.</p></div></div><div class="code"><div class="wrapper"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> store</div></div></div></div></body></html>

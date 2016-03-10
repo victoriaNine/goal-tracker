@@ -1,0 +1,73 @@
+<!DOCTYPE html><html lang="en"><head><title>components/GoalTrackerWidget.spec</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="components/GoalTrackerWidget.spec"><meta name="groc-project-path" content="src/components/GoalTrackerWidget.spec.js"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path">src/components/GoalTrackerWidget.spec.js</div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><h1 id="suivi-du-jour-pour-un-objectif-spec">Suivi du jour pour un objectif (spec)</h1></div></div></div><div class="segment"><div class="code"><div class="wrapper"><span class="hljs-keyword">import</span> chai, { expect } <span class="hljs-keyword">from</span> <span class="hljs-string">'chai'</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p><a href="http://airbnb.io/enzyme/">Enzyme</a> est la super techno d’Airbnb pour tester
+à toute bombe des composants React.  Elle dispose même d’un plugin Chai pour
+avoir des assertions plus &quot;métier&quot;.</p></div></div><div class="code"><div class="wrapper"><span class="hljs-keyword">import</span> createChaiEnzyme <span class="hljs-keyword">from</span> <span class="hljs-string">'chai-enzyme'</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>On s’assure également qu’on peut (et doit, en fait) utiliser toutes les assertions
+comme des fonctions, même <code>.undefined</code>, <code>.true</code>, etc. et celles ajoutées par les
+plugins (ex. <code>.calledOnce</code>). Ainsi, au lieu d’un échec silencieux en cas de faute
+de frappe, on a une erreur franche.</p></div></div><div class="code"><div class="wrapper"><span class="hljs-keyword">import</span> dirtyChai <span class="hljs-keyword">from</span> <span class="hljs-string">'dirty-chai'</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>On trouve également un sérialiseur dédié à Enzyme pour faire du
+<a href="https://facebook.github.io/jest/docs/snapshot-testing.html#content">snapshot testing</a>
+propre avec Jest.  Toutefois, pour utiliser ce dernier, il faut passer par les <em>matchers</em>
+de Jest, et non ceux de Chai.  D’où cet import dédié, <code>jestExpect</code>.</p></div></div><div class="code"><div class="wrapper"><span class="hljs-keyword">import</span> enzymeToJSON <span class="hljs-keyword">from</span> <span class="hljs-string">'enzyme-to-json'</span>
+<span class="hljs-keyword">import</span> jestExpect <span class="hljs-keyword">from</span> <span class="hljs-string">'jest-matchers'</span>
+
+<span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Le mode “shallow” d’Enzyme est adapté à tout test qui ne nécessite pas le
+DOM réel mais peut se contenter du DOM virtuel, ce qui inclue même les simulations
+d’événement.</p></div></div><div class="code"><div class="wrapper"><span class="hljs-keyword">import</span> { shallow } <span class="hljs-keyword">from</span> <span class="hljs-string">'enzyme'</span>
+<span class="hljs-keyword">import</span> sinon <span class="hljs-keyword">from</span> <span class="hljs-string">'sinon'</span>
+<span class="hljs-keyword">import</span> sinonChai <span class="hljs-keyword">from</span> <span class="hljs-string">'sinon-chai'</span>
+
+<span class="hljs-keyword">import</span> ActionThumbUp <span class="hljs-keyword">from</span> <span class="hljs-string">'material-ui/svg-icons/action/thumb-up'</span>
+<span class="hljs-keyword">import</span> ContentAdd <span class="hljs-keyword">from</span> <span class="hljs-string">'material-ui/svg-icons/content/add'</span>
+
+<span class="hljs-keyword">import</span> Gauge <span class="hljs-keyword">from</span> <span class="hljs-string">'../../src/components/Gauge'</span>
+<span class="hljs-keyword">import</span> GoalTrackerWidget <span class="hljs-keyword">from</span> <span class="hljs-string">'../../src/components/GoalTrackerWidget'</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Mise en place des plugins Chai d’Enzyme et de Sinon, ainsi que de la garantie
+d’assertions sous forme de fonctions.</p></div></div><div class="code"><div class="wrapper">chai.use(createChaiEnzyme()).use(sinonChai).use(dirtyChai)</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Classiquement, quand on décrit un composant React, on utilise sa balise JSX
+comme sujet de la description.  Celui-ci est censé…</p></div></div><div class="code"><div class="wrapper">describe(<span class="hljs-string">'&lt;GoalTrackerWidget /&gt;'</span>, () =&gt; {
+  <span class="hljs-keyword">const</span> goal = { id: <span class="hljs-number">0</span>, name: <span class="hljs-string">'My goal'</span>, target: <span class="hljs-number">42</span>, units: <span class="hljs-string">'wombats'</span> }
+
+  describe(<span class="hljs-string">'when not completed'</span>, () =&gt; {</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h2 id="produire-le-balisage-attendu-pour-un-objectif-non-atteint">…produire le balisage attendu pour un objectif non atteint</h2></div></div></div><div class="segment"><div class="code"><div class="wrapper">    it(<span class="hljs-string">'should render appropriately'</span>, () =&gt; {</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>On va tester quatre valeurs pour le taux de complétion: les “bornes” 0, 1 et 41,
+d’une part, et une valeur quelconque, ici le 21 en plein milieu, d’autre part.</p></div></div><div class="code"><div class="wrapper">      <span class="hljs-keyword">for</span> (<span class="hljs-keyword">const</span> progress <span class="hljs-keyword">of</span> [<span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">21</span>, <span class="hljs-number">41</span>]) {</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Enrobage de test</p></div></div><div class="code"><div class="wrapper">        <span class="hljs-keyword">const</span> wrapper = shallow(<span class="xml"><span class="hljs-tag">&lt;<span class="hljs-title">GoalTrackerWidget</span> <span class="hljs-attribute">goal</span>=<span class="hljs-value">{goal}</span> <span class="hljs-attribute">progress</span>=<span class="hljs-value">{progress}</span> /&gt;</span>)</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Vérification du contenu, ici grâce aux assertions métier fournies par le plugin
+Chai d’Enzyme (<code>.text(…)</code>, <code>.contain(…)</code>).</p></div></div><div class="code"><div class="wrapper">        expect(wrapper.find(<span class="hljs-string">'h2'</span>)).to.have.text(goal.name)
+        expect(wrapper).to.contain(<span class="xml"><span class="hljs-tag">&lt;<span class="hljs-title">Gauge</span> <span class="hljs-attribute">value</span>=<span class="hljs-value">{progress}</span> <span class="hljs-attribute">max</span>=<span class="hljs-value">{goal.target}</span> /&gt;</span>)</span>
+        expect(wrapper).to.contain.text(<span class="hljs-string">`<span class="hljs-subst">${progress}</span> <span class="hljs-subst">${goal.units}</span> sur <span class="hljs-subst">${goal.target}</span>`</span>)
+        expect(wrapper).to.contain(<span class="xml"><span class="hljs-tag">&lt;<span class="hljs-title">ContentAdd</span> /&gt;</span>)</span>
+      }
+    })</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h2 id="-d-clencher-correctement-son-onprogress-au-clic">…déclencher correctement son <code>onProgress</code> au clic</h2></div></div><div class="code"><div class="wrapper">    it(<span class="hljs-string">'should trigger its onProgress on click'</span>, () =&gt; {
+      <span class="hljs-keyword">const</span> progress = <span class="hljs-number">21</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Pour vérifier que le <em>callback</em> transmis est bien appelé, rien de tel qu’un
+<em>spy</em> fourni par <a href="http://sinonjs.org/">SinonJS</a>.</p></div></div><div class="code"><div class="wrapper">      <span class="hljs-keyword">const</span> onProgress = sinon.spy()
+      <span class="hljs-keyword">const</span> wrapper = shallow(<span class="xml"><span class="hljs-tag">&lt;<span class="hljs-title">GoalTrackerWidget</span> <span class="hljs-attribute">goal</span>=<span class="hljs-value">{goal}</span> <span class="hljs-attribute">progress</span>=<span class="hljs-value">{progress}</span> <span class="hljs-attribute">onProgress</span>=<span class="hljs-value">{onProgress}</span> /&gt;</span>)</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>On simule le clic.  Merci Enzyme!</p></div></div><div class="code"><div class="wrapper">      wrapper.find(<span class="hljs-string">'FloatingActionButton'</span>).simulate(<span class="hljs-string">'click'</span>)</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Ici, pouvoir appeler <code>calledOnce</code> comme une fonction se fait grâce à
+l’application antérieure du plugin Dirty Chai.</p></div></div><div class="code"><div class="wrapper">      expect(onProgress).to.have.been.calledOnce()
+    })</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h2 id="valider-le-snapshot">…valider le snapshot</h2>
+<p>(avoir une structure détaillée identique à la dernière qui a été validée
+par les développeurs au moyen d’un snapshot.)</p></div></div><div class="code"><div class="wrapper">    it(<span class="hljs-string">'should otherwise match the expected snapshot'</span>, () =&gt; {
+      <span class="hljs-keyword">const</span> mock = sinon.useFakeTimers()
+      <span class="hljs-keyword">try</span> {
+        <span class="hljs-keyword">const</span> wrapper = shallow(<span class="xml"><span class="hljs-tag">&lt;<span class="hljs-title">GoalTrackerWidget</span> <span class="hljs-attribute">goal</span>=<span class="hljs-value">{goal}</span> <span class="hljs-attribute">progress</span>=<span class="hljs-value">{21}</span> /&gt;</span>)</span>
+
+        jestExpect(enzymeToJSON(wrapper)).toMatchSnapshot()
+      } <span class="hljs-keyword">finally</span> {
+        mock.restore()
+      }
+    })
+  })
+
+  describe(<span class="hljs-string">'when completed (or exceeded)'</span>, () =&gt; {</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h2 id="produire-le-balisage-attendu-pour-un-objectif-atteint-voire-dpass">…produire le balisage attendu pour un objectif atteint (voire dépassé)</h2></div></div></div><div class="segment"><div class="code"><div class="wrapper">    it(<span class="hljs-string">'should render appropriately'</span>, () =&gt; {</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>On va tester trois valeurs de dépassement de l’objectif: la borne zéro
+(objectif atteint, pile-poil) et des plus grandes (objectif dépassé).</p></div></div><div class="code"><div class="wrapper">      <span class="hljs-keyword">for</span> (<span class="hljs-keyword">const</span> progress <span class="hljs-keyword">of</span> [goal.target, goal.target + <span class="hljs-number">1</span>, goal.target + <span class="hljs-number">10</span>]) {
+        <span class="hljs-keyword">const</span> wrapper = shallow(<span class="xml"><span class="hljs-tag">&lt;<span class="hljs-title">GoalTrackerWidget</span> <span class="hljs-attribute">goal</span>=<span class="hljs-value">{goal}</span> <span class="hljs-attribute">progress</span>=<span class="hljs-value">{progress}</span> /&gt;</span>)</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Si on a atteint ou dépassé l&#39;objectif, on n&#39;est pas censé avoir l’icône d&#39;ajout
+qui trahirait un bouton de progression, mais on est censé avoir l’icône de pouce
+vers le haut, qui traduit l’objectif (au moins) atteint.</p></div></div><div class="code"><div class="wrapper">        expect(wrapper).not.to.contain(<span class="xml"><span class="hljs-tag">&lt;<span class="hljs-title">ContentAdd</span> /&gt;</span>)</span>
+        expect(wrapper).to.contain(<span class="xml"><span class="hljs-tag">&lt;<span class="hljs-title">ActionThumbUp</span> /&gt;</span>)</span>
+      }
+    })</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h2 id="valider-le-snapshot">…valider le snapshot</h2>
+<p>(avoir une structure détaillée identique à la dernière qui a été validée
+par les développeurs au moyen d’un snapshot.)</p></div></div><div class="code"><div class="wrapper">    it(<span class="hljs-string">'should otherwise match the expected snapshot'</span>, () =&gt; {
+      <span class="hljs-keyword">const</span> mock = sinon.useFakeTimers()
+      <span class="hljs-keyword">try</span> {
+        <span class="hljs-keyword">const</span> wrapper = shallow(<span class="xml"><span class="hljs-tag">&lt;<span class="hljs-title">GoalTrackerWidget</span> <span class="hljs-attribute">goal</span>=<span class="hljs-value">{goal}</span> <span class="hljs-attribute">progress</span>=<span class="hljs-value">{42}</span> /&gt;</span>)</span>
+
+        jestExpect(enzymeToJSON(wrapper)).toMatchSnapshot()
+      } <span class="hljs-keyword">finally</span> {
+        mock.restore()
+      }
+    })
+  })
+})</div></div></div></div></body></html>

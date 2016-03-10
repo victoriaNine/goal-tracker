@@ -1,0 +1,168 @@
+<!DOCTYPE html><html lang="en"><head><title>containers/SettingsScreen</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="containers/SettingsScreen"><meta name="groc-project-path" content="src/containers/SettingsScreen.js"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path">src/containers/SettingsScreen.js</div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><h1 id="paramtres-conteneur">Paramètres (conteneur)</h1></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Ce conteneur est particulièrement intéressant car il illustre de nombreux
+aspects de React et ES6.  On y trouve notamment un import “espace de noms”,
+une surcharge de constructeur, des méthodes métier décorées ou non, des
+méthodes de cycle de vie de composant React, et le recours à <code>bindActionCreators</code>
+et <code>mapDispatchToProps</code>.  Pas mal!</p></div></div><div class="code"><div class="wrapper"><span class="hljs-keyword">import</span> autobind <span class="hljs-keyword">from</span> <span class="hljs-string">'autobind-decorator'</span>
+<span class="hljs-keyword">import</span> { connect } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-redux'</span>
+<span class="hljs-keyword">import</span> DocumentTitle <span class="hljs-keyword">from</span> <span class="hljs-string">'react-document-title'</span>
+<span class="hljs-keyword">import</span> { browserHistory <span class="hljs-keyword">as</span> history, Link } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-router'</span>
+<span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>
+
+<span class="hljs-keyword">import</span> ArrowBack <span class="hljs-keyword">from</span> <span class="hljs-string">'material-ui/svg-icons/navigation/arrow-back'</span>
+<span class="hljs-keyword">import</span> { Card, CardActions, CardText, CardTitle } <span class="hljs-keyword">from</span> <span class="hljs-string">'material-ui/Card'</span>
+<span class="hljs-keyword">import</span> ContentAdd <span class="hljs-keyword">from</span> <span class="hljs-string">'material-ui/svg-icons/content/add'</span>
+<span class="hljs-keyword">import</span> Divider <span class="hljs-keyword">from</span> <span class="hljs-string">'material-ui/Divider'</span>
+<span class="hljs-keyword">import</span> FlatButton <span class="hljs-keyword">from</span> <span class="hljs-string">'material-ui/FlatButton'</span>
+<span class="hljs-keyword">import</span> IconButton <span class="hljs-keyword">from</span> <span class="hljs-string">'material-ui/IconButton'</span>
+<span class="hljs-keyword">import</span> { List, ListItem } <span class="hljs-keyword">from</span> <span class="hljs-string">'material-ui/List'</span>
+<span class="hljs-keyword">import</span> Logout <span class="hljs-keyword">from</span> <span class="hljs-string">'material-ui/svg-icons/action/exit-to-app'</span>
+<span class="hljs-keyword">import</span> RaisedButton <span class="hljs-keyword">from</span> <span class="hljs-string">'material-ui/RaisedButton'</span>
+<span class="hljs-keyword">import</span> Subheader <span class="hljs-keyword">from</span> <span class="hljs-string">'material-ui/Subheader'</span>
+
+<span class="hljs-keyword">import</span> { addGoal, logOut, removeGoal, updateGoal } <span class="hljs-keyword">from</span> <span class="hljs-string">'../action-creators'</span>
+<span class="hljs-keyword">import</span> AddSettingDialog <span class="hljs-keyword">from</span> <span class="hljs-string">'../components/AddSettingDialog'</span>
+<span class="hljs-keyword">import</span> DeleteSettingDialog <span class="hljs-keyword">from</span> <span class="hljs-string">'../components/DeleteSettingDialog'</span>
+<span class="hljs-keyword">import</span> GoalSetting <span class="hljs-keyword">from</span> <span class="hljs-string">'../components/GoalSetting'</span>
+
+const DEFAULT_STATE = { goal: {}, dialog: null }</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h2 id="le-composant-conteneur">Le composant conteneur</h2></div></div></div><div class="segment"><div class="code"><div class="wrapper"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">SettingsScreen</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Lorsqu’une classe ES6 de composant React a un état transient
+(<code>this.state</code>), la norme est de l&#39;initialiser à la construction
+(par défaut, il vaut <code>null</code>).</p></div></div><div class="code"><div class="wrapper">  constructor (...args) {
+    <span class="hljs-keyword">super</span>(...args)
+    <span class="hljs-keyword">this</span>.state = DEFAULT_STATE
+  }</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Pour plus de détails sur cette syntaxe <code>@autobind</code>, voyez la documentation
+du conteneur de connexion.</p></div></div><div class="code"><div class="wrapper">  @autobind
+  addOrUpdateGoal ({ id, name, target, units, keepOpen }) {
+    <span class="hljs-keyword">const</span> { addGoal, updateGoal } = <span class="hljs-keyword">this</span>.props
+    <span class="hljs-keyword">if</span> (id !== <span class="hljs-literal">undefined</span>) {
+      updateGoal(id, name, target, units)
+      keepOpen = <span class="hljs-literal">false</span>
+    } <span class="hljs-keyword">else</span> {
+      addGoal(name, target, units)
+    }
+    <span class="hljs-keyword">if</span> (!keepOpen) {
+      <span class="hljs-keyword">this</span>.closeDialogs()
+    }
+  }
+
+  @autobind
+  closeDialogs () {
+    <span class="hljs-keyword">this</span>.setState(DEFAULT_STATE)
+  }</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Méthode de cycle de vie React qui est déclenchée chaque fois que le
+composant reçoit un jeu de propriétés <em>après sa construction initiale</em>.</p>
+<p>On en a besoin ici à cause de la déconnexion, qui se produit depuis ce
+composant, et entraîne une mise à autre chose que <code>success</code> de la propriété
+<code>loginState</code>, transmise par le <code>connect</code> et le <code>mapStateToProps</code> en bas de
+fichier.</p>
+<p>En effet, si on est déconnecté-e, on n&#39;a plus “le droit” d&#39;être sur cet
+écran (qui n&#39;est de toutes façons plus pertinent), mais vu que la route
+n&#39;a pas changé, on ne s&#39;est pas faits attraper par le col grâce au hook
+<code>onEnter</code> de la route.  On détecte donc ce cas de figure pour naviguer
+manuellement (via la méthode <code>push(…)</code> de l&#39;API de notre gestion d’historique)
+sur la racine, qui affichera du coup l’écran de connexion.</p></div></div><div class="code"><div class="wrapper">  componentWillReceiveProps ({ currentUser: { loginState } }) {
+    <span class="hljs-keyword">if</span> (loginState !== <span class="hljs-string">'success'</span>) {
+      history.push(<span class="hljs-string">'/'</span>)
+    }
+  }
+
+  @autobind
+  deleteSelectedGoal () {
+    <span class="hljs-keyword">this</span>.props.removeGoal(<span class="hljs-keyword">this</span>.state.goal.id)
+    <span class="hljs-keyword">this</span>.closeDialogs()
+  }
+
+  @autobind
+  openGoalAdder () {
+    <span class="hljs-keyword">this</span>.setState({ goal: {}, dialog: <span class="hljs-string">'add-or-update'</span> })
+  }
+
+  openGoalDeleter (goal) {
+    <span class="hljs-keyword">this</span>.setState({ goal, dialog: <span class="hljs-string">'delete'</span> })
+  }
+
+  openGoalEditor (goal) {
+    <span class="hljs-keyword">this</span>.setState({ goal, dialog: <span class="hljs-string">'add-or-update'</span> })
+  }
+
+  render () {
+    <span class="hljs-keyword">const</span> { currentUser, goals, logOut } = <span class="hljs-keyword">this</span>.props
+    <span class="hljs-keyword">const</span> logoutButton = (
+      <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-title">IconButton</span> <span class="hljs-attribute">onClick</span>=<span class="hljs-value">{logOut}</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-title">Logout</span> /&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-title">IconButton</span>&gt;</span>
+    )</span>
+
+    <span class="hljs-keyword">return</span> (</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Enrobage par un
+<a href="https://github.com/gaearon/react-document-title"><code>&lt;DocumentTitle&gt;</code></a>
+pour modifier automatiquement le titre de la fenêtre lorsqu’on affiche
+ce composant conteneur.</p></div></div><div class="code"><div class="wrapper">      &lt;DocumentTitle title=<span class="hljs-string">'Mes paramètres'</span>&gt;
+        <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-title">div</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-title">FlatButton</span> <span class="hljs-attribute">label</span>=<span class="hljs-value">'Retour'</span>
+            <span class="hljs-attribute">icon</span>=<span class="hljs-value">{&lt;ArrowBack</span> /&gt;</span>} containerElement={<span class="hljs-tag">&lt;<span class="hljs-title">Link</span> <span class="hljs-attribute">to</span>=<span class="hljs-value">'/'</span> /&gt;</span>}
+          /&gt;
+          <span class="hljs-tag">&lt;<span class="hljs-title">Card</span> <span class="hljs-attribute">className</span>=<span class="hljs-value">'settings'</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-title">CardTitle</span> <span class="hljs-attribute">title</span>=<span class="hljs-value">'Paramètres'</span> /&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-title">CardText</span>&gt;</span>
+              <span class="hljs-tag">&lt;<span class="hljs-title">List</span>&gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-title">ListItem</span>
+                  <span class="hljs-attribute">primaryText</span>=<span class="hljs-value">'Vous êtes connecté-e en tant que'</span></span></span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Le <code>…|| {}</code> ici sert à éviter une erreur au <code>render</code> après
+déconnexion, une fraction de seconde avant qu’on navigue vers
+l’URL racine.  Ainsi, en cas de <code>currentUser</code> à <code>null</code>, on se
+retrouve juste avec une valeur de propriété à <code>undefined</code>.</p></div></div><div class="code"><div class="wrapper">                  secondaryText={(currentUser || {}).email}
+                  rightIconButton={logoutButton}
+                /&gt;
+              <span class="xml"><span class="hljs-tag">&lt;/<span class="hljs-title">List</span>&gt;</span>
+              <span class="hljs-tag">&lt;<span class="hljs-title">Divider</span> /&gt;</span>
+              <span class="hljs-tag">&lt;<span class="hljs-title">List</span>&gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-title">Subheader</span>&gt;</span>Mes objectifs<span class="hljs-tag">&lt;/<span class="hljs-title">Subheader</span>&gt;</span>
+                {goals.map((goal) =&gt;
+                  <span class="hljs-tag">&lt;<span class="hljs-title">GoalSetting</span> <span class="hljs-attribute">key</span>=<span class="hljs-value">{goal.id}</span> <span class="hljs-attribute">goal</span>=<span class="hljs-value">{goal}</span></span></span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Remarquez que puisqu’on a besoin de passer un argument à nos
+méthodes ici, on doit utiliser une fonction dédiée, et comme
+c&#39;est une fonction fléchée, on préserve le <code>this</code>.  Du coup,
+inutile de décorer ces deux méthodes par <code>@autobind</code>.</p></div></div><div class="code"><div class="wrapper">                    onDeleteClick={() =&gt; <span class="hljs-keyword">this</span>.openGoalDeleter(goal)}
+                    onEditClick={() =&gt; <span class="hljs-keyword">this</span>.openGoalEditor(goal)}
+                  /&gt;
+                )}
+                {goals.length === <span class="hljs-number">0</span> &amp;&amp; (
+                  <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-title">ListItem</span> <span class="hljs-attribute">secondaryText</span>=<span class="hljs-value">'Aucun objectif pour le moment'</span> /&gt;</span>
+                )</span>}
+              &lt;<span class="hljs-regexp">/List&gt;
+            &lt;/</span>CardText&gt;
+            <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-title">CardActions</span>&gt;</span>
+              <span class="hljs-tag">&lt;<span class="hljs-title">RaisedButton</span> <span class="hljs-attribute">label</span>=<span class="hljs-value">'Ajouter un objectif'</span> <span class="hljs-attribute">primary</span></span></span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>En revanche, ici, on passe une référence (et pareil pour les
+dialogues ci-après), du coup les méthodes concernées sont <em>bound</em>.</p></div></div><div class="code"><div class="wrapper">                icon={<span class="xml"><span class="hljs-tag">&lt;<span class="hljs-title">ContentAdd</span> /&gt;</span>} onClick={this.openGoalAdder}
+              /&gt;
+            <span class="hljs-tag">&lt;/<span class="hljs-title">CardActions</span>&gt;</span>
+          <span class="hljs-tag">&lt;/<span class="hljs-title">Card</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-title">AddSettingDialog</span>
+            <span class="hljs-attribute">goal</span>=<span class="hljs-value">{this.state.goal}</span>
+            <span class="hljs-attribute">open</span>=<span class="hljs-value">{this.state.dialog</span> =<span class="hljs-value">==</span> '<span class="hljs-attribute">add-or-update</span>'}
+            <span class="hljs-attribute">onCancel</span>=<span class="hljs-value">{this.closeDialogs}</span>
+            <span class="hljs-attribute">onAdd</span>=<span class="hljs-value">{this.addOrUpdateGoal}</span>
+          /&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-title">DeleteSettingDialog</span>
+            <span class="hljs-attribute">goal</span>=<span class="hljs-value">{this.state.goal}</span>
+            <span class="hljs-attribute">open</span>=<span class="hljs-value">{this.state.dialog</span> =<span class="hljs-value">==</span> '<span class="hljs-attribute">delete</span>'}
+            <span class="hljs-attribute">onCancel</span>=<span class="hljs-value">{this.closeDialogs}</span>
+            <span class="hljs-attribute">onDelete</span>=<span class="hljs-value">{this.deleteSelectedGoal}</span>
+          /&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-title">DocumentTitle</span>&gt;</span>
+    )</span>
+  }
+}</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h2 id="connexion-au-store-redux">Connexion au <em>store</em> Redux</h2></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>On s’intéresse uniquement aux champs <code>goals</code> et <code>currentUser</code> de l’état global,
+qu’on veut retrouver dans nos propriétés sous les mêmes noms.  Par ricochet,
+seuls les changements apportés à ces champs entraîneront un éventuel <em>re-render</em>
+de notre conteneur.</p></div></div><div class="code"><div class="wrapper"><span class="hljs-keyword">const</span> mapStateToProps = ({ goals, currentUser }) =&gt; ({ goals, currentUser })</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>C’est <a href="https://github.com/reactjs/react-redux/blob/master/docs/api.md#connectmapstatetoprops-mapdispatchtoprops-mergeprops-options"><code>connect(…)</code></a>,
+fourni par Redux, qui fait les connexions nécessaires pour nous
+fournir les propriétés, implémenter notre <code>shouldComponentUpdate(…)</code> et nous fournir
+aussi une propriété <code>dispatch(…)</code>, pré-associée au <em>store</em> Redux transmis via le
+contexte React.</p>
+<p>Voici le seul exemple de <code>mapDispatchToProps</code> de l’application.  On s&#39;en sert
+pour fournir comme propriétés des fonctions qui ne sont pas juste les <em>action
+creators</em> nus (qui renverraient simplement le descripteur d&#39;action), mais carrément
+des <em>appels <code>dispatch</code> préconfigurés.  Puisqu’ici on passe un objet plutôt que notre
+propre implémentation, il applique ce comportement par défaut en supposant que toutes
+les valeurs de l’objet sont des </em>action creators*.</p></div></div><div class="code"><div class="wrapper"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> connect(
+  mapStateToProps,
+  { addGoal, logOut, removeGoal, updateGoal }
+)(SettingsScreen)</div></div></div></div></body></html>

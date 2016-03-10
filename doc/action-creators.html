@@ -1,0 +1,93 @@
+<!DOCTYPE html><html lang="en"><head><title>action-creators</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content=""><meta name="groc-document-path" content="action-creators"><meta name="groc-project-path" content="src/action-creators.js"><link rel="stylesheet" type="text/css" media="all" href="assets/style.css"><script type="text/javascript" src="assets/behavior.js"></script><body><div id="meta"><div class="file-path">src/action-creators.js</div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><h1 id="actions-creators-pour-redux">Actions Creators pour Redux</h1></div></div></div><div class="segment"><div class="code"><div class="wrapper"><span class="hljs-keyword">import</span> callAPI <span class="hljs-keyword">from</span> <span class="hljs-string">'./lib/api'</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Avec Redux, on <a href="http://redux.js.org/docs/recipes/ReducingBoilerplate.html">recommande de centraliser</a>
+le code qui crée des objets représentant les actions
+vers le <em>store</em> central.  Pour rappel, une action
+est une demande de modification de l’état central.
+Ce sont par défaut des objets JS basiques, avec
+au moins une propriété <code>type</code>, qui vaut généralement
+une <code>String</code> unique (aussi complexe soit-elle).</p>
+<p>En centralisant leur création, <strong>on garantit que d’un
+endroit de l&#39;appli à un autre, on ne créera pas des
+objets hétérogènes pour une même action</strong>.</p></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h2 id="rglages-dobjectifs">Réglages d’objectifs</h2></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>On prend soin d’exporter les constantes de type aussi,
+afin notamment que le code des <em>reducers</em> puisse les
+utiliser et <strong>garantir la concordance</strong> avec les champs
+<code>type</code> dans les objets actions.</p></div></div><div class="code"><div class="wrapper"><span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> ADD_GOAL = <span class="hljs-string">'@@GOALTRACKER/GOALS_ADD'</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> REMOVE_GOAL = <span class="hljs-string">'@@GOALTRACKER/GOALS_DEL'</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> UPDATE_GOAL = <span class="hljs-string">'@@GOALTRACKER/GOALS_UPDATE'</span>
+
+<span class="hljs-keyword">export</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">addGoal</span> (<span class="hljs-params">name, target, units</span>) </span>{
+  <span class="hljs-keyword">return</span> { type: ADD_GOAL, name, target, units }
+}
+
+<span class="hljs-keyword">export</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">removeGoal</span> (<span class="hljs-params">id</span>) </span>{
+  <span class="hljs-keyword">return</span> { type: REMOVE_GOAL, id }
+}
+
+<span class="hljs-keyword">export</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">updateGoal</span> (<span class="hljs-params">id, name, target, units</span>) </span>{
+  <span class="hljs-keyword">return</span> { type: UPDATE_GOAL, id, name, target, units }
+}</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h2 id="utilisation-quotidienne">Utilisation quotidienne</h2></div></div></div><div class="segment"><div class="code"><div class="wrapper"><span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> CLEAR_HISTORY = <span class="hljs-string">'@@GOALTRACKER/HISTORY_CLEAR'</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> CLOSE_DAY = <span class="hljs-string">'@@GOALTRACKER/CLOSE_DAY'</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Pour les actions asynchrones, on découpe en général en trois actions
+synchrone : lancement, réussite, échec.</p></div></div><div class="code"><div class="wrapper"><span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> LOGIN_FAILURE = <span class="hljs-string">'@@GOALTRACKER/AUTH_LOGIN_FAILURE'</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> LOGIN_START = <span class="hljs-string">'@@GOALTRACKER/AUTH_LOGIN_START'</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> LOGIN_SUCCESS = <span class="hljs-string">'@@GOALTRACKER/AUTH_LOGIN_SUCCESS'</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> LOGOUT = <span class="hljs-string">'@@GOALTRACKER/AUTH_LOGOUT'</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> PROGRESS = <span class="hljs-string">'@@GOALTRACKER/PROGRESS'</span>
+
+<span class="hljs-keyword">export</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">clearHistory</span> (<span class="hljs-params"></span>) </span>{
+  <span class="hljs-keyword">return</span> { type: CLEAR_HISTORY }
+}
+
+<span class="hljs-keyword">export</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">closeDay</span> (<span class="hljs-params"></span>) </span>{
+  <span class="hljs-keyword">return</span> { type: CLOSE_DAY }
+}</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Et voici un <em>action creator</em> <strong>asynchrone</strong> !  Cette action de
+login se fera sur notre serveur de dev, via une requête Ajax, et
+ne peut donc se contenter de renvoyer un objet action inerte, seule
+chose pourtant que Redux permet de base…</p>
+<p>On utilisera donc le middleware <a href="https://github.com/gaearon/redux-thunk#readme">redux-thunk</a>
+lorsqu’on créera le <em>store</em>, afin d’avoir le droit de renvoyer des
+<em>thunks</em>, en l’occurence des fonctions que le middleware appellera ensuite
+en leur fournissant le <code>dispatch</code> du <em>store</em> : à charge pour elle ensuite
+de faire les bons appels à <code>dispatch</code> au fil du traitement asynchrone.</p></div></div><div class="code"><div class="wrapper"><span class="hljs-keyword">export</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">logIn</span> (<span class="hljs-params">email, password</span>) </span>{
+  <span class="hljs-keyword">return</span> <span class="hljs-keyword">async</span> (dispatch) =&gt; {</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><ol>
+<li>On commence par <em>dispatcher</em> l’action synchrone qui marque le début
+du traitement.  Ainsi, l’UI peut refléter qu’un traitement est en cours,
+par exemple avec un spinner, ou en désactivant un bouton…</li>
+</ol></div></div><div class="code"><div class="wrapper">    dispatch(logInStart())
+
+    <span class="hljs-keyword">try</span> {</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><ol>
+<li>On lance l’appel réseau à notre serveur de dev.  Ici, simple requête
+100% JSON sur le point d’appel prévu.</li>
+</ol></div></div><div class="code"><div class="wrapper">      <span class="hljs-keyword">const</span> { status } = <span class="hljs-keyword">await</span> callAPI({
+        url: <span class="hljs-string">'/sessions'</span>,
+        body: { email, password }
+      })</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>3a. On a bien reçu une réponse du serveur.  S&#39;il nous dit OK, on
+<em>dispatche</em> l’action synchrone de succès.  Sinon, celle d’échec.</p></div></div><div class="code"><div class="wrapper">      <span class="hljs-keyword">if</span> (status === <span class="hljs-string">'authenticated'</span>) {
+        dispatch(logInSuccess(email))
+      } <span class="hljs-keyword">else</span> {
+        dispatch(logInFailure())
+      }
+    } <span class="hljs-keyword">catch</span> (err) {</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>3b.  Un souci réseau est survenu.  On logue l’erreur tout en
+<em>dispatchant</em> l’action synchrone d’échec.</p></div></div><div class="code"><div class="wrapper">      dispatch(logInFailure())
+      <span class="hljs-built_in">console</span>.error(err)
+    }
+  }
+}</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Notez que ces actions synchrones « d’étapes » pour le login (asynchrone)
+sont exportées juste histoire de pouvoir les traiter dans les tests du
+réducteur associé.  Notre code « de production » pourrait se passer des exports.</p></div></div><div class="code"><div class="wrapper"><span class="hljs-keyword">export</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">logInFailure</span> (<span class="hljs-params"></span>) </span>{
+  <span class="hljs-keyword">return</span> { type: LOGIN_FAILURE }
+}
+
+<span class="hljs-keyword">export</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">logInStart</span> (<span class="hljs-params"></span>) </span>{
+  <span class="hljs-keyword">return</span> { type: LOGIN_START }
+}
+
+<span class="hljs-keyword">export</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">logInSuccess</span> (<span class="hljs-params">email</span>) </span>{
+  <span class="hljs-keyword">return</span> { type: LOGIN_SUCCESS, email }
+}
+
+<span class="hljs-keyword">export</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">logOut</span> (<span class="hljs-params"></span>) </span>{
+  <span class="hljs-keyword">return</span> { type: LOGOUT }
+}
+
+<span class="hljs-keyword">export</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">progressOnGoal</span> (<span class="hljs-params">goalId, increment = 1</span>) </span>{
+  <span class="hljs-keyword">return</span> { type: PROGRESS, goalId, increment }
+}</div></div></div></div></body></html>

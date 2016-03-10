@@ -1,0 +1,102 @@
+<!DOCTYPE html><html lang="en"><head><title>components/AddSettingDialog</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="components/AddSettingDialog"><meta name="groc-project-path" content="src/components/AddSettingDialog.js"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path">src/components/AddSettingDialog.js</div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><h1 id="ajoutmodification-de-paramtre">Ajout/modification de paramètre</h1></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>C’est en fait une boîte de dialogue, inclue d’office dans
+le conteneur parent (<code>SettingsScreen</code>), et qui va donc être
+initialement <em>rendered</em> sans objectif (<code>goal</code>), puis verra ses
+propriétés mises à jour à chaque utilisation (<code>goal</code> vide pour
+un ajout, <code>goal</code> rempli, dont son <code>id</code>, pour une modification).
+D&#39;où le <code>componentWillReceiveProps</code>…</p></div></div><div class="code"><div class="wrapper"><span class="hljs-keyword">import</span> autobind <span class="hljs-keyword">from</span> <span class="hljs-string">'autobind-decorator'</span>
+<span class="hljs-keyword">import</span> React, { Component, PropTypes } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>
+
+<span class="hljs-keyword">import</span> Checkbox <span class="hljs-keyword">from</span> <span class="hljs-string">'material-ui/Checkbox'</span>
+<span class="hljs-keyword">import</span> ContentAdd <span class="hljs-keyword">from</span> <span class="hljs-string">'material-ui/svg-icons/content/add'</span>
+<span class="hljs-keyword">import</span> ContentEdit <span class="hljs-keyword">from</span> <span class="hljs-string">'material-ui/svg-icons/content/create'</span>
+<span class="hljs-keyword">import</span> Dialog <span class="hljs-keyword">from</span> <span class="hljs-string">'material-ui/Dialog'</span>
+<span class="hljs-keyword">import</span> FlatButton <span class="hljs-keyword">from</span> <span class="hljs-string">'material-ui/FlatButton'</span>
+<span class="hljs-keyword">import</span> TextField <span class="hljs-keyword">from</span> <span class="hljs-string">'material-ui/TextField'</span>
+
+<span class="hljs-keyword">import</span> { GoalPropType } <span class="hljs-keyword">from</span> <span class="hljs-string">'../prop-types'</span>
+
+const DEFAULT_STATE = { id: undefined, name: <span class="hljs-string">''</span>, target: 5, units: <span class="hljs-string">''</span>, keepOpen: true }</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h2 id="le-composant-bte-prsentationnel">Le composant “bête” (présentationnel)</h2></div></div></div><div class="segment"><div class="code"><div class="wrapper"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">AddSettingDialog</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Comme pour tous les composants “bêtes”, la bonne pratique
+consiste à expliciter les propriétés autorisées.  Puisqu’on est
+dans une classe ES6 et qu&#39;on a configuré Babel avec le plugin
+<code>transform-class-properties</code>, on peut se servir de cette syntaxe,
+actuellement au <a href="https://tc39.github.io/process-document/">stade 1</a>,
+prévue pour ES8+.</p></div></div><div class="code"><div class="wrapper">  static propTypes = {
+    goal: PropTypes.oneOfType([GoalPropType, PropTypes.shape({})]),
+    onAdd: PropTypes.func.isRequired,
+    onCancel: PropTypes.func.isRequired,
+    open: PropTypes.bool.isRequired
+  }</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Classe ES6 avec un état transient?  On initialise <code>this.state</code>
+dans le constructeur…</p></div></div><div class="code"><div class="wrapper">  constructor (...args) {
+    <span class="hljs-keyword">super</span>(...args)
+    <span class="hljs-keyword">this</span>.state = DEFAULT_STATE
+  }</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Lorsqu’on reçoit une mise à jour de <code>this.props.goal</code>, on resynchronise
+notre état transient en commençant par l&#39;état par défaut, suivi de surcharges
+éventuelles par l’objectif existant passé.  Merci la syntaxe
+<a href="https://github.com/sebmarkbage/ecmascript-rest-spread"><em>object spread</em></a>
+prévue pour ES8+ (stade 2) et fournie par le preset Babel <code>stage-2</code>.</p></div></div><div class="code"><div class="wrapper">  componentWillReceiveProps ({ goal }) {
+    <span class="hljs-keyword">this</span>.setState({ ...DEFAULT_STATE, ...goal, keepOpen: goal.id === <span class="hljs-literal">undefined</span> })
+  }</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Gestionnaire générique de modification de champ, qui reflète la valeur de champ
+de formulaire (forcément <code>String</code>) dans le bon champ de <code>this.state</code>, avec une
+conversion de type à la volée si besoin.</p>
+<p>On a un cas particulier pour la case à cocher, qui appelle ce gestionnaire depuis
+un <code>onCheck</code> au lieu d’un <code>onChange</code>, et passer le troisième argument, d’où un
+traitement spécifique.</p>
+<p>Ce code est particulièrement intéressant, parce qu&#39;on y voit…</p>
+<ul>
+<li>Une sélection dynamique de fonction (<code>Number</code> ou <code>String</code>)</li>
+<li>Une propriété dynamique/calculée (<code>[field]</code>)</li>
+</ul></div></div><div class="code"><div class="wrapper">  handleChange (event, field, checked) {
+    <span class="hljs-keyword">if</span> (field === <span class="hljs-string">'keepOpen'</span>) {
+      <span class="hljs-keyword">this</span>.setState({ keepOpen: checked })
+    } <span class="hljs-keyword">else</span> {
+      <span class="hljs-keyword">const</span> caster = field === <span class="hljs-string">'target'</span> ? <span class="hljs-built_in">Number</span> : <span class="hljs-built_in">String</span>
+      <span class="hljs-keyword">this</span>.setState({ [field]: caster(event.target.value) })
+    }
+  }</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Et finalement le <code>render()</code></p></div></div><div class="code"><div class="wrapper">  render () {
+    <span class="hljs-keyword">const</span> { open, onCancel } = <span class="hljs-keyword">this</span>.props</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Si le <code>goal</code> passé a une propriété <code>id</code>, c’est un objectif existant, donc
+on le “modifie”, sinon c&#39;est du vide et on “ajoute” un nouvel objectif.</p></div></div><div class="code"><div class="wrapper">    <span class="hljs-keyword">const</span> isEditing = <span class="hljs-string">'id'</span> <span class="hljs-keyword">in</span> <span class="hljs-keyword">this</span>.props.goal
+
+    <span class="hljs-keyword">const</span> actions = [
+      <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-title">FlatButton</span> <span class="hljs-attribute">label</span>=<span class="hljs-value">'Annuler'</span> <span class="hljs-attribute">secondary</span> <span class="hljs-attribute">onTouchTap</span>=<span class="hljs-value">{onCancel}</span> /&gt;</span>
+    ]</span>
+    <span class="hljs-keyword">if</span> (isEditing) {
+      actions.push(<span class="xml"><span class="hljs-tag">&lt;<span class="hljs-title">FlatButton</span> <span class="hljs-attribute">label</span>=<span class="hljs-value">'Modifier'</span> <span class="hljs-attribute">primary</span> <span class="hljs-attribute">onTouchTap</span>=<span class="hljs-value">{this.triggerAdd}</span> <span class="hljs-attribute">icon</span>=<span class="hljs-value">{&lt;ContentEdit</span> /&gt;</span>} /&gt;)</span>
+    } <span class="hljs-keyword">else</span> {
+      actions.push(<span class="xml"><span class="hljs-tag">&lt;<span class="hljs-title">FlatButton</span> <span class="hljs-attribute">label</span>=<span class="hljs-value">'Ajouter'</span> <span class="hljs-attribute">primary</span> <span class="hljs-attribute">onTouchTap</span>=<span class="hljs-value">{this.triggerAdd}</span> <span class="hljs-attribute">icon</span>=<span class="hljs-value">{&lt;ContentAdd</span> /&gt;</span>} /&gt;)</span>
+    }
+
+    <span class="hljs-keyword">return</span> (
+      <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-title">Dialog</span>
+        <span class="hljs-attribute">title</span>=<span class="hljs-value">{isEditing</span> ? '<span class="hljs-attribute">Modifier</span> <span class="hljs-attribute">un</span> <span class="hljs-attribute">objectif</span>' <span class="hljs-attribute">:</span> '<span class="hljs-attribute">Ajouter</span> <span class="hljs-attribute">un</span> <span class="hljs-attribute">objectif</span>'}
+        <span class="hljs-attribute">actions</span>=<span class="hljs-value">{actions}</span>
+        <span class="hljs-attribute">open</span>=<span class="hljs-value">{open}</span>
+        <span class="hljs-attribute">onRequestClose</span>=<span class="hljs-value">{onCancel}</span>
+      &gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-title">div</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-title">TextField</span> <span class="hljs-attribute">name</span>=<span class="hljs-value">'name'</span> <span class="hljs-attribute">floatingLabelText</span>=<span class="hljs-value">'Nom'</span> <span class="hljs-attribute">required</span> <span class="hljs-attribute">fullWidth</span> <span class="hljs-attribute">autoFocus</span>
+            <span class="hljs-attribute">value</span>=<span class="hljs-value">{this.state.name}</span> <span class="hljs-attribute">onChange</span>=<span class="hljs-value">{(event)</span> =&gt;</span> this.handleChange(event, 'name')}
+          /&gt;
+          <span class="hljs-tag">&lt;<span class="hljs-title">TextField</span> <span class="hljs-attribute">name</span>=<span class="hljs-value">'target'</span> <span class="hljs-attribute">floatingLabelText</span>=<span class="hljs-value">'Quantité par jour'</span> <span class="hljs-attribute">type</span>=<span class="hljs-value">'number'</span> <span class="hljs-attribute">required</span>
+            <span class="hljs-attribute">value</span>=<span class="hljs-value">{this.state.target}</span> <span class="hljs-attribute">onChange</span>=<span class="hljs-value">{(event)</span> =&gt;</span> this.handleChange(event, 'target')}
+          /&gt;
+          {' '}
+          <span class="hljs-tag">&lt;<span class="hljs-title">TextField</span> <span class="hljs-attribute">name</span>=<span class="hljs-value">'units'</span> <span class="hljs-attribute">floatingLabelText</span>=<span class="hljs-value">'Unité'</span> <span class="hljs-attribute">hintText</span>=<span class="hljs-value">'pas, minutes de course…'</span> <span class="hljs-attribute">required</span>
+            <span class="hljs-attribute">value</span>=<span class="hljs-value">{this.state.units}</span> <span class="hljs-attribute">onChange</span>=<span class="hljs-value">{(event)</span> =&gt;</span> this.handleChange(event, 'units')}
+          /&gt;
+          {isEditing || (
+            <span class="hljs-tag">&lt;<span class="hljs-title">Checkbox</span>
+              <span class="hljs-attribute">label</span>=<span class="hljs-value">'Garder ouvert pour l’ajout suivant'</span>
+              <span class="hljs-attribute">checked</span>=<span class="hljs-value">{this.state.keepOpen}</span>
+              <span class="hljs-attribute">onCheck</span>=<span class="hljs-value">{(event,</span> <span class="hljs-attribute">checked</span>) =&gt;</span> this.handleChange(event, 'keepOpen', checked)}
+              style={{ marginTop: '1em' }}
+            /&gt;
+          )</span>}
+        &lt;<span class="hljs-regexp">/div&gt;
+      &lt;/</span>Dialog&gt;
+    )
+  }</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Pour plus de détails sur cette syntaxe <code>@autobind</code>, voyez la documentation
+du conteneur de connexion.</p></div></div><div class="code"><div class="wrapper">  @autobind
+  triggerAdd () {
+    <span class="hljs-keyword">this</span>.props.onAdd(<span class="hljs-keyword">this</span>.state)</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>On réinitialise toujours à l’état par défaut après un ajout, juste au cas où.</p></div></div><div class="code"><div class="wrapper">    <span class="hljs-keyword">this</span>.setState(DEFAULT_STATE)
+  }
+}</div></div></div></div></body></html>

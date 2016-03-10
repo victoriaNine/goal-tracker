@@ -1,0 +1,14 @@
+<!DOCTYPE html><html lang="en"><head><title>webpack.config.shared</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content=""><meta name="groc-document-path" content="webpack.config.shared"><meta name="groc-project-path" content="webpack.config.shared.js"><link rel="stylesheet" type="text/css" media="all" href="assets/style.css"><script type="text/javascript" src="assets/behavior.js"></script><body><div id="meta"><div class="file-path">webpack.config.shared.js</div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><h1 id="utilitaires-pour-la-configuration-webpack">Utilitaires pour la configuration Webpack</h1></div></div></div><div class="segment"><div class="code"><div class="wrapper"><span class="hljs-keyword">var</span> fs = <span class="hljs-built_in">require</span>(<span class="hljs-string">'fs'</span>)
+<span class="hljs-keyword">var</span> path = <span class="hljs-built_in">require</span>(<span class="hljs-string">'path'</span>)</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Personnalisation de la configuration de babel-loader.</p></div></div><div class="code"><div class="wrapper">exports.getAdjustedBabelOptions = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getAdjustedBabelOptions</span> (<span class="hljs-params"></span>) </span>{
+  <span class="hljs-keyword">var</span> babelConfig = <span class="hljs-built_in">JSON</span>.parse(fs.readFileSync(path.join(__dirname, <span class="hljs-string">'package.json'</span>))).babel
+  babelConfig.presets.forEach(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">preset</span>) </span>{
+    <span class="hljs-keyword">if</span> (preset <span class="hljs-keyword">instanceof</span> <span class="hljs-built_in">Array</span> &amp;&amp; preset[<span class="hljs-number">0</span>] === <span class="hljs-string">'env'</span>) {
+      preset[<span class="hljs-number">1</span>].modules = <span class="hljs-literal">false</span>
+    }
+  })
+  babelConfig.cacheDirectory = path.join(
+    __dirname, <span class="hljs-string">'node_modules'</span>, <span class="hljs-string">'.cache'</span>, <span class="hljs-string">'babel-loader'</span>,
+    process.env.NODE_ENV || <span class="hljs-string">'development'</span>
+  )
+  <span class="hljs-keyword">return</span> babelConfig
+}</div></div></div></div></body></html>

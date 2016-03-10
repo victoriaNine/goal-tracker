@@ -1,0 +1,90 @@
+<!DOCTYPE html><html lang="en"><head><title>lib/helpers.spec</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="lib/helpers.spec"><meta name="groc-project-path" content="src/lib/helpers.spec.js"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path">src/lib/helpers.spec.js</div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><h1 id="utilitaires-spec">Utilitaires (spec)</h1></div></div></div><div class="segment"><div class="code"><div class="wrapper"><span class="hljs-keyword">import</span> { expect } <span class="hljs-keyword">from</span> <span class="hljs-string">'chai'</span>
+<span class="hljs-keyword">import</span> { formatDate, getCompletionRatio, getDayCounts } <span class="hljs-keyword">from</span> <span class="hljs-string">'../../src/lib/helpers'</span>
+<span class="hljs-keyword">import</span> moment <span class="hljs-keyword">from</span> <span class="hljs-string">'moment'</span>
+<span class="hljs-keyword">import</span> sinon <span class="hljs-keyword">from</span> <span class="hljs-string">'sinon'</span>
+
+describe(<span class="hljs-string">'formatDate'</span>, () =&gt; {
+  it(<span class="hljs-string">'should render today properly'</span>, () =&gt; {
+    const today = new Date()
+    expect(formatDate(today)).to.equal(<span class="hljs-string">'Aujourd’hui'</span>)
+  })
+
+  it(<span class="hljs-string">'should render yesterday properly'</span>, () =&gt; {
+    const yesterday = moment().subtract(1, <span class="hljs-string">'day'</span>).toDate()
+    expect(formatDate(yesterday)).to.equal(<span class="hljs-string">'Hier'</span>)
+  })
+
+  it(<span class="hljs-string">'should render the day before yesterday properly'</span>, () =&gt; {
+    const twoDaysAgo = moment().subtract(2, <span class="hljs-string">'days'</span>).toDate()
+    expect(formatDate(twoDaysAgo)).to.equal(<span class="hljs-string">'Avant-hier'</span>)
+  })
+
+  it(<span class="hljs-string">'should render any other date with a long date form'</span>, () =&gt; {
+    const clocks = sinon.useFakeTimers(moment(<span class="hljs-string">'2016-03-06'</span>).valueOf())
+    try {
+      const threeDaysAgo = moment().subtract(3, <span class="hljs-string">'days'</span>).toDate()
+      expect(formatDate(threeDaysAgo)).to.equal(<span class="hljs-string">'jeudi 3 mars 2016'</span>)
+    } finally {
+      clocks.restore()
+    }
+  })
+
+  it(<span class="hljs-string">'should honor a custom format in French, if provided'</span>, () =&gt; {
+    expect(formatDate(moment(<span class="hljs-string">'2016-03-06'</span>).toDate(), <span class="hljs-string">'LL'</span>)).to.equal(<span class="hljs-string">'6 mars 2016'</span>)
+  })
+})
+
+describe(<span class="hljs-string">'getCompletionRatio'</span>, () =&gt; {
+  const SIX_HOURS = 6 * 60 * 60 * 1000
+
+  it(<span class="hljs-string">'should compute the proper values at various moments of the day'</span>, () =&gt; {
+    const clocks = sinon.useFakeTimers(moment(<span class="hljs-string">'2016-03-06'</span>).valueOf())
+    try {</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>0h</p></div></div><div class="code"><div class="wrapper">      expect(getCompletionRatio(<span class="hljs-number">0</span>, <span class="hljs-number">24</span>)).to.equal(<span class="hljs-number">1</span>)
+      expect(getCompletionRatio(<span class="hljs-number">3</span>, <span class="hljs-number">24</span>)).to.equal(<span class="hljs-number">1</span>)</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>6h (H-18)</p></div></div><div class="code"><div class="wrapper">      clocks.tick(SIX_HOURS)
+      expect(getCompletionRatio(<span class="hljs-number">0</span>, <span class="hljs-number">24</span>)).to.equal(<span class="hljs-number">0</span>)
+      expect(getCompletionRatio(<span class="hljs-number">3</span>, <span class="hljs-number">24</span>)).to.equal(<span class="hljs-number">0.5</span>)
+      expect(getCompletionRatio(<span class="hljs-number">6</span>, <span class="hljs-number">24</span>)).to.equal(<span class="hljs-number">1</span>)
+      expect(getCompletionRatio(<span class="hljs-number">9</span>, <span class="hljs-number">24</span>)).to.equal(<span class="hljs-number">1.5</span>)</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>12h (H-12)</p></div></div><div class="code"><div class="wrapper">      clocks.tick(SIX_HOURS)
+      expect(getCompletionRatio(<span class="hljs-number">0</span>, <span class="hljs-number">24</span>)).to.equal(<span class="hljs-number">0</span>)
+      expect(getCompletionRatio(<span class="hljs-number">3</span>, <span class="hljs-number">24</span>)).to.equal(<span class="hljs-number">0.25</span>)
+      expect(getCompletionRatio(<span class="hljs-number">6</span>, <span class="hljs-number">24</span>)).to.equal(<span class="hljs-number">0.5</span>)
+      expect(getCompletionRatio(<span class="hljs-number">12</span>, <span class="hljs-number">24</span>)).to.equal(<span class="hljs-number">1</span>)
+      expect(getCompletionRatio(<span class="hljs-number">18</span>, <span class="hljs-number">24</span>)).to.equal(<span class="hljs-number">1.5</span>)</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>18h (H-6)</p></div></div><div class="code"><div class="wrapper">      clocks.tick(SIX_HOURS)
+      expect(getCompletionRatio(<span class="hljs-number">0</span>, <span class="hljs-number">24</span>)).to.equal(<span class="hljs-number">0</span>)
+      expect(getCompletionRatio(<span class="hljs-number">9</span>, <span class="hljs-number">24</span>)).to.equal(<span class="hljs-number">0.5</span>)
+      expect(getCompletionRatio(<span class="hljs-number">18</span>, <span class="hljs-number">24</span>)).to.equal(<span class="hljs-number">1</span>)
+    } <span class="hljs-keyword">finally</span> {
+      clocks.restore()
+    }
+  })
+
+  it(<span class="hljs-string">'should automatically return a ratio &gt;= 1 if target is zero'</span>, () =&gt; {
+    expect(getCompletionRatio(<span class="hljs-number">0</span>, <span class="hljs-number">0</span>)).to.be.at.least(<span class="hljs-number">1</span>)
+    expect(getCompletionRatio(<span class="hljs-number">3</span>, <span class="hljs-number">0</span>)).to.be.at.least(<span class="hljs-number">1</span>)
+  })
+})
+
+describe(<span class="hljs-string">'getDayCounts'</span>, () =&gt; {
+  <span class="hljs-keyword">const</span> goals = [
+    { id: <span class="hljs-number">0</span>, target: <span class="hljs-number">10</span> },
+    { id: <span class="hljs-number">1</span>, target: <span class="hljs-number">5</span> },
+    { id: <span class="hljs-number">2</span>, target: <span class="hljs-number">27</span> }
+  ]
+
+  it(<span class="hljs-string">'should properly compute totals on full progress info'</span>, () =&gt; {
+    expect(getDayCounts({ <span class="hljs-number">0</span>: <span class="hljs-number">1</span>, <span class="hljs-number">1</span>: <span class="hljs-number">2</span>, <span class="hljs-number">2</span>: <span class="hljs-number">3</span> }, goals)).to.deep.equal([<span class="hljs-number">6</span>, <span class="hljs-number">42</span>])
+  })
+
+  it(<span class="hljs-string">'should properly compute totals on partial progress info'</span>, () =&gt; {
+    expect(getDayCounts({ <span class="hljs-number">0</span>: <span class="hljs-number">1</span>, <span class="hljs-number">2</span>: <span class="hljs-number">3</span> }, goals)).to.deep.equal([<span class="hljs-number">4</span>, <span class="hljs-number">42</span>])
+  })
+
+  it(<span class="hljs-string">'should properly compute zero totals on empty progress info'</span>, () =&gt; {
+    expect(getDayCounts({}, goals)).to.deep.equal([<span class="hljs-number">0</span>, <span class="hljs-number">42</span>])
+  })
+
+  it(<span class="hljs-string">'should properly compute zero totals on empty goals'</span>, () =&gt; {
+    expect(getDayCounts({}, [])).to.deep.equal([<span class="hljs-number">0</span>, <span class="hljs-number">0</span>])
+    expect(getDayCounts({ <span class="hljs-number">0</span>: <span class="hljs-number">1</span>, <span class="hljs-number">1</span>: <span class="hljs-number">2</span>, <span class="hljs-number">2</span>: <span class="hljs-number">3</span> }, [])).to.deep.equal([<span class="hljs-number">0</span>, <span class="hljs-number">0</span>])
+  })
+})</div></div></div></div></body></html>

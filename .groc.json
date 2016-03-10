@@ -1,0 +1,10 @@
+{
+  "glob": [
+    "src/**/*.js",
+    "test/**/*.js",
+    "package.json",
+    "webpack.config.*.js"
+  ],
+  "github": false,
+  "--no-strip": true
+}

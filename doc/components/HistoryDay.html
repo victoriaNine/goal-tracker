@@ -1,0 +1,29 @@
+<!DOCTYPE html><html lang="en"><head><title>components/HistoryDay</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="components/HistoryDay"><meta name="groc-project-path" content="src/components/HistoryDay.js"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path">src/components/HistoryDay.js</div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><h1 id="journe-historique">Journée historique</h1></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Section de l&#39;écran d’historique, dédiée à un jour précis.</p></div></div><div class="code"><div class="wrapper"><span class="hljs-keyword">import</span> React, { PropTypes } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>
+
+<span class="hljs-keyword">import</span> Divider <span class="hljs-keyword">from</span> <span class="hljs-string">'material-ui/Divider'</span>
+<span class="hljs-keyword">import</span> { List } <span class="hljs-keyword">from</span> <span class="hljs-string">'material-ui/List'</span>
+<span class="hljs-keyword">import</span> Subheader <span class="hljs-keyword">from</span> <span class="hljs-string">'material-ui/Subheader'</span>
+
+<span class="hljs-keyword">import</span> { formatDate } <span class="hljs-keyword">from</span> <span class="hljs-string">'../lib/helpers'</span>
+<span class="hljs-keyword">import</span> { GoalPropType, HistoryDayStatsPropType } <span class="hljs-keyword">from</span> <span class="hljs-string">'../prop-types'</span>
+<span class="hljs-keyword">import</span> HistoryDayGoal <span class="hljs-keyword">from</span> <span class="hljs-string">'./HistoryDayGoal'</span>
+
+const HistoryDay = ({ goals, stats: { date, progresses } }) =&gt; (
+  &lt;div&gt;
+    &lt;Divider /&gt;
+    &lt;List&gt;
+      &lt;Subheader&gt;{formatDate(date)}&lt;/Subheader&gt;
+      {goals.map((goal) =&gt; {
+        const goalStats = progresses[goal.id]
+        if (goalStats) {
+          return &lt;HistoryDayGoal key={goal.id} goal={goal} stats={goalStats} /&gt;
+        }
+      })}
+    &lt;/List&gt;
+  &lt;/div&gt;
+)</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Comme toujours, on définit les propriétés attendues/autorisées pour validation.</p></div></div><div class="code"><div class="wrapper">HistoryDay.propTypes = {
+  goals: PropTypes.arrayOf(GoalPropType).isRequired,
+  stats: HistoryDayStatsPropType.isRequired
+}
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> HistoryDay</div></div></div></div></body></html>
