@@ -67,6 +67,17 @@ describe('Goals reducer', () => {
   })
 
   it('should handle goal update (when not in goals)', () => {
-    // TODO: votre code d’exercice ici
+    const id = 10
+    const name = 'Test reducer 3'
+    const target = 42
+    const units = 'wombats'
+    const initialState = [
+      { id: 0, name: 'Test reducer 1', target: 10, units: 'tests' },
+      { id: 1, name: 'Test reducer 2', target: 5, units: 'tests' }
+    ]
+    const expectedState = [...initialState, { id, name, target, units }]
+
+    expect(reducer(initialState, updateGoal(id, name, target, units)))
+      .to.deep.equal(expectedState)
   })
 })
