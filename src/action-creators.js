@@ -18,8 +18,14 @@ export function updateGoal (id, name, target, units) {
 
 // Using the app everyday
 
+export const CLEAR_HISTORY = '@@GOALTRACKER/HISTORY_CLEAR'
 export const LOGIN = '@@GOALTRACKER/AUTH_LOGIN'
 export const LOGOUT = '@@GOALTRACKER/AUTH_LOGOUT'
+export const PROGRESS = '@@GOALTRACKER/PROGRESS'
+
+export function clearHistory () {
+  return { type: CLEAR_HISTORY }
+}
 
 export function logIn (email, password) {
   return { type: LOGIN, email, password }
@@ -27,4 +33,8 @@ export function logIn (email, password) {
 
 export function logOut () {
   return { type: LOGOUT }
+}
+
+export function progressOnGoal (goalId, increment = 1) {
+  return { type: PROGRESS, goalId, increment }
 }
