@@ -4,9 +4,9 @@ export const LOGIN = '@@GOALTRACKER/AUTH_LOGIN'
 export const LOGOUT = '@@GOALTRACKER/AUTH_LOGOUT'
 
 export function logIn (email, password) {
-  // Votre code ici
+  return { type: LOGIN, email, password }
 }
 
 export function logOut () {
-  // Votre code ici
+  return { type: LOGOUT }
 }
