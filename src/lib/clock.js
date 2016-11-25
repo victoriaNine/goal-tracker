@@ -2,6 +2,10 @@ import moment from 'moment'
 
 import clockIcon from '../icons/clock-reset.png'
 import { closeDay } from '../action-creators'
+import { getCompletionRatio, getDayCounts } from '../lib/helpers'
+import lateIcon from '../icons/reminder-late.png'
+import okayishIcon from '../icons/reminder-okayish.png'
+import superLateIcon from '../icons/reminder-super-late.png'
 import store from '../store'
 
 const clock = setInterval(checkClock, 1000)
