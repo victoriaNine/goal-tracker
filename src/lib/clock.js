@@ -25,11 +25,19 @@ const HISTORY_TRIGGER_TIME = process.env.NODE_ENV === 'production'
   ? '00:00:00'
   : moment().add(10, 'seconds').format('HH:mm:ss')
 
+const REMINDER_TIMES = process.env.NODE_ENV === 'production'
+  ? ['12:00:00', '18:00:00', '21:00:00', '23:00:00']
+  : [moment().add(5, 'seconds').format('HH:mm:ss')]
+
 function checkClock () {
   const now = moment().format('HH:mm:ss')
 
   if (now === HISTORY_TRIGGER_TIME) {
     closePreviousDay()
+  }
+
+  if (permissionGranted && REMINDER_TIMES.includes(now)) {
+    notifyReminder()
   }
 }
 
@@ -75,4 +83,32 @@ function notify ({ title, text, icon, secondsVisible = 0 }) {
       setTimeout(() => notif.close(), secondsVisible * 1000)
     })
   }
+}
+
+function notifyReminder () {
+  const { todaysProgress, goals } = store.getState()
+  const [totalProgress, totalTarget] = getDayCounts(todaysProgress, goals)
+  const ratio = getCompletionRatio(totalProgress, totalTarget)
+
+  if (ratio >= 0.9) {
+    return
+  }
+
+  let title = 'Tu es un peu à la bourre…'
+  let icon = okayishIcon
+
+  if (ratio < 0.5) {
+    title = 'Tu es super à la bourre !'
+    icon = superLateIcon
+  } else if (ratio < 0.75) {
+    title = 'Tu es à la bourre…'
+    icon = lateIcon
+  }
+
+  notify({
+    title,
+    text: `Il te reste ${totalTarget - totalProgress} tâches (sur ${totalTarget}) à accomplir aujourd’hui.`,
+    icon,
+    secondsVisible: 8
+  })
 }
