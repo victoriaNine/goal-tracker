@@ -1,6 +1,6 @@
 import { expect } from 'chai'
 
-import { logIn, logOut } from '../action-creators'
+import { logInFailure, logInStart, logInSuccess, logOut } from '../action-creators'
 import reducer from './currentUser'
 
 describe('Current User reducer', () => {
@@ -12,13 +12,18 @@ describe('Current User reducer', () => {
       .to.deep.equal(expectedState)
   })
 
-  it('should handle login', () => {
-    const email = 'john@example.com'
+  it('should handle login steps', () => {
     const initialState = { loginState: 'logged-out' }
-    const expectedState = { loginState: 'success', email }
+    const email = 'john@example.com'
 
-    expect(reducer(initialState, logIn(email, 'no fate')))
-      .to.deep.equal(expectedState)
+    expect(reducer(initialState, logInStart()))
+      .to.deep.equal({ loginState: 'pending' })
+
+    expect(reducer(initialState, logInSuccess(email)))
+      .to.deep.equal({ loginState: 'success', email })
+
+    expect(reducer(initialState, logInFailure()))
+      .to.deep.equal({ loginState: 'failure' })
   })
 
   it('should handle logout', () => {

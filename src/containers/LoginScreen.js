@@ -5,6 +5,7 @@ import React, { Component } from 'react'
 import ArrowForward from 'material-ui/svg-icons/navigation/arrow-forward'
 import { Card, CardActions, CardText, CardTitle } from 'material-ui/Card'
 import RaisedButton from 'material-ui/RaisedButton'
+import Snackbar from 'material-ui/Snackbar'
 import TextField from 'material-ui/TextField'
 
 import { logIn } from '../action-creators'
@@ -19,6 +20,17 @@ export class LoginScreen extends Component {
   }
 
   render () {
+    const { loginState } = this.props
+    const loggingIn = loginState === 'pending'
+    const logInIcon = loggingIn ? null : <ArrowForward />
+    const snackBar = loginState === 'failure'
+      ? <Snackbar
+        open
+        message='Identifiant ou mot de passe invalide'
+        autoHideDuration={2000}
+        />
+      : ''
+
     return (
       <form onSubmit={this.login}>
         <Card className='loginScreen'>
@@ -44,13 +56,16 @@ export class LoginScreen extends Component {
           </CardText>
           <CardActions style={{ textAlign: 'center' }}>
             <RaisedButton label='Connecte-toi' labelPosition='before' primary
-              icon={<ArrowForward />} type='submit'
+              icon={logInIcon} type='submit' disabled={loggingIn}
             />
           </CardActions>
         </Card>
+        {snackBar}
       </form>
     )
   }
 }
 
-export default connect()(LoginScreen)
+const mapStateToProps = ({ currentUser: { loginState } }) => ({ loginState })
+
+export default connect(mapStateToProps)(LoginScreen)
