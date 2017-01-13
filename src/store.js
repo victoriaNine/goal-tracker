@@ -1,5 +1,6 @@
-import { createStore } from 'redux'
+import { applyMiddleware, compose, createStore } from 'redux'
 import moment from 'moment'
+import thunkMiddleware from 'redux-thunk'
 
 import goalTrackerReducer from './reducers'
 
@@ -41,9 +42,12 @@ const DEFAULT_STATE = {
   ]
 }
 
-const enhancer = typeof window !== 'undefined' && window.__REDUX_DEVTOOLS_EXTENSION__
-  ? window.__REDUX_DEVTOOLS_EXTENSION__()
-  : (x) => x
+const enhancer = compose(
+  applyMiddleware(thunkMiddleware),
+  typeof window !== 'undefined' && window.__REDUX_DEVTOOLS_EXTENSION__
+    ? window.__REDUX_DEVTOOLS_EXTENSION__()
+    : (x) => x
+)
 
 const store = createStore(goalTrackerReducer, DEFAULT_STATE, enhancer)
 

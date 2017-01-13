@@ -1,3 +1,5 @@
+import callAPI from './lib/api'
+
 // Goal settings management
 
 export const ADD_GOAL = '@@GOALTRACKER/GOALS_ADD'
@@ -30,7 +32,24 @@ export function clearHistory () {
 }
 
 export function logIn (email, password) {
-  // return { type: LOGIN, email, password }
+  return async (dispatch) => {
+    dispatch(logInStart())
+
+    try {
+      const { status } = await callAPI({
+        url: '/sessions',
+        body: { email, password }
+      })
+      if (status === 'authenticated') {
+        dispatch(logInSuccess(email))
+      } else {
+        dispatch(logInFailure())
+      }
+    } catch (err) {
+      dispatch(logInFailure())
+      console.error(err)
+    }
+  }
 }
 
 export function logInFailure () {
