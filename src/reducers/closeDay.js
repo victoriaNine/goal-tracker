@@ -20,7 +20,13 @@ export default function closeDay (state, action) {
 function tallyPreviousDay ({ goals, history, today, todaysProgress }) {
   const historyEntry = {
     date: today,
-    progresses: // ???
+    progresses: goals.reduce((acc, { id, target }) => {
+      const progress = todaysProgress[id] || 0
+      if (progress > 0) {
+        acc[id] = [progress, target]
+      }
+      return acc
+    }, {})
   }
 
   return [historyEntry, ...history]
