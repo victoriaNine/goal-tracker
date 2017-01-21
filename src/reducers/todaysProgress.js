@@ -5,7 +5,7 @@ export default function todaysProgress (state = {}, action) {
     case PROGRESS:
       const previous = state[action.goalId] || 0
       const increment = Number(action.increment) || 0
-      return // ???
+      return { ...state, [action.goalId]: previous + increment }
 
     default:
       return state
